@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { FileUpload } from "@/components/FileUpload";
 import { InsuranceForm } from "@/components/InsuranceForm";
@@ -55,8 +54,20 @@ const Index = () => {
         await new Promise(resolve => setTimeout(resolve, 200));
       }
       
-      // Simulate extraction result
-      const mockVins = Math.random() > 0.2 ? ["WBAVA31030NL12345", "1HGBH41JXMN109186"] : [];
+      // Simulate extraction result based on file type
+      const isPdf = extractedFile.file.type === 'application/pdf';
+      let mockVins: string[] = [];
+      
+      if (Math.random() > 0.2) { // 80% success rate
+        if (isPdf) {
+          // Only one VIN per PDF
+          mockVins = ["WBAVA31030NL12345"];
+        } else {
+          // Multiple VINs/plates for XLS/DOC files
+          mockVins = ["WBAVA31030NL12345", "1HGBH41JXMN109186", "ABC-1234"];
+        }
+      }
+      
       extractedFile.extractedVins = mockVins;
       extractedFile.status = mockVins.length > 0 ? 'success' : 'error';
       setExtractedFiles([...newExtractedFiles]);
@@ -118,10 +129,11 @@ const Index = () => {
     setExtractedFiles(updatedFiles);
   };
 
-  const addManualVehicle = (vin: string) => {
+  const addManualVehicle = async (vin: string) => {
+    // Simulate CEBIA data collection for manual entry
     const newExtracted = [...extractedFiles];
-    // Add to a "manual" file entry or create one
     const manualFileIndex = newExtracted.findIndex(f => f.file.name === 'Manual Entry');
+    
     if (manualFileIndex >= 0) {
       newExtracted[manualFileIndex].extractedVins.push(vin);
     } else {
@@ -132,6 +144,7 @@ const Index = () => {
         extractedVins: [vin]
       });
     }
+    
     setExtractedFiles(newExtracted);
   };
 

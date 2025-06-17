@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,7 +34,7 @@ export const FileUpload = ({
   onAddManualVehicle
 }: FileUploadProps) => {
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
-  const [manualInput, setManualInput] = useState("");
+  const [manualInputs, setManualInputs] = useState<string[]>([""]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     // Validate file types
@@ -122,13 +121,14 @@ export const FileUpload = ({
     }
   };
 
-  const handleManualAdd = () => {
-    if (!manualInput.trim()) {
+  const handleManualAdd = (index: number) => {
+    const input = manualInputs[index];
+    if (!input.trim()) {
       toast.error("Please enter a VIN or license plate");
       return;
     }
 
-    const cleanInput = manualInput.trim().toUpperCase();
+    const cleanInput = input.trim().toUpperCase();
     
     if (cleanInput.length === 17) {
       onAddManualVehicle(cleanInput);
@@ -141,8 +141,31 @@ export const FileUpload = ({
       return;
     }
 
-    setManualInput("");
+    // Clear the input and add a new empty one
+    const newInputs = [...manualInputs];
+    newInputs[index] = "";
+    if (index === manualInputs.length - 1) {
+      newInputs.push("");
+    }
+    setManualInputs(newInputs);
   };
+
+  const updateManualInput = (index: number, value: string) => {
+    const newInputs = [...manualInputs];
+    newInputs[index] = value;
+    setManualInputs(newInputs);
+  };
+
+  const removeManualInput = (index: number) => {
+    if (manualInputs.length > 1) {
+      const newInputs = manualInputs.filter((_, i) => i !== index);
+      setManualInputs(newInputs);
+    }
+  };
+
+  // Get all manually entered VINs
+  const manualEntryFile = extractedFiles.find(f => f.file.name === 'Manual Entry');
+  const manualVins = manualEntryFile?.extractedVins || [];
 
   return (
     <Card className="border-2 border-purple-200 shadow-lg rounded-lg">
@@ -256,19 +279,51 @@ export const FileUpload = ({
 
         {/* Manual Vehicle Addition */}
         <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <div className="flex gap-2 mb-2">
-            <Input
-              placeholder="Enter VIN (17 chars) or License Plate (7 chars)"
-              value={manualInput}
-              onChange={(e) => setManualInput(e.target.value)}
-              className="flex-1 rounded-md"
-            />
-            <Button onClick={handleManualAdd} className="bg-purple-600 hover:bg-purple-700 rounded-md">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Vehicle
-            </Button>
+          <h4 className="font-medium text-gray-700 mb-3">Add Vehicles Manually</h4>
+          
+          {/* Show all manually entered VINs */}
+          {manualVins.length > 0 && (
+            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-sm font-medium text-green-700 mb-2">Added Vehicles:</p>
+              <div className="space-y-1">
+                {manualVins.map((vin, index) => (
+                  <div key={index} className="text-sm text-green-600 font-mono">
+                    {vin}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Manual input fields */}
+          <div className="space-y-2">
+            {manualInputs.map((input, index) => (
+              <div key={index} className="flex gap-2">
+                <Input
+                  placeholder="Enter VIN (17 chars) or License Plate (7 chars)"
+                  value={input}
+                  onChange={(e) => updateManualInput(index, e.target.value)}
+                  className="flex-1 rounded-md"
+                />
+                <Button onClick={() => handleManualAdd(index)} className="bg-purple-600 hover:bg-purple-700 rounded-md">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add
+                </Button>
+                {manualInputs.length > 1 && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => removeManualInput(index)}
+                    className="text-red-500 hover:text-red-700 rounded-md"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            ))}
           </div>
-          <p className="text-sm text-gray-600">
+          
+          <p className="text-sm text-gray-600 mt-2">
             Auto-detects VIN (17 characters) or License Plate (7 characters)
           </p>
         </div>

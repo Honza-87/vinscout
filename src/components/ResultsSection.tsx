@@ -57,132 +57,163 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
               <p>No vehicles decoded yet. Extract VINs from documents and click "Decode" to see results here.</p>
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-4">
               {vehicles.map((vehicle) => (
-                <Card key={vehicle.id} className="border-2 border-gray-300 rounded-lg shadow-sm">
-                  <CardContent className="p-4 space-y-4">
-                    {/* Vehicle Identity */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label>VIN</Label>
-                        <Input
-                          value={vehicle.vin}
-                          onChange={(e) => updateVehicle(vehicle.id, 'vin', e.target.value)}
-                          placeholder="17-character VIN"
-                          maxLength={17}
-                          className="rounded-md"
-                        />
-                      </div>
-                      <div>
-                        <Label>License Plate</Label>
-                        <Input
-                          value={vehicle.licensePlate}
-                          onChange={(e) => updateVehicle(vehicle.id, 'licensePlate', e.target.value)}
-                          placeholder="XXX-XXXX"
-                          className="rounded-md"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Vehicle Data Display */}
-                    {vehicle.cebia && (
-                      <div className="p-4 bg-green-50 border-2 border-green-200 rounded-lg">
-                        <h4 className="font-medium text-green-800 mb-3">Vehicle Data</h4>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                          <div><span className="font-medium text-green-700">Type:</span> <span className="text-green-600">{vehicle.cebia.type}</span></div>
-                          <div><span className="font-medium text-green-700">Manufacturer:</span> <span className="text-green-600">{vehicle.cebia.manufacturer}</span></div>
-                          <div><span className="font-medium text-green-700">Model:</span> <span className="text-green-600">{vehicle.cebia.model}</span></div>
-                          <div><span className="font-medium text-green-700">Year:</span> <span className="text-green-600">{vehicle.cebia.year}</span></div>
-                          <div><span className="font-medium text-green-700">Engine:</span> <span className="text-green-600">{vehicle.cebia.engineDisplacement}</span></div>
-                          <div><span className="font-medium text-green-700">Power:</span> <span className="text-green-600">{vehicle.cebia.enginePower}</span></div>
-                          <div><span className="font-medium text-green-700">Max Weight:</span> <span className="text-green-600">{vehicle.cebia.maxWeight}</span></div>
-                          <div><span className="font-medium text-green-700">Seats:</span> <span className="text-green-600">{vehicle.cebia.seats}</span></div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Vehicle Details */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label>Mileage</Label>
-                        <Input
-                          value={vehicle.mileage}
-                          onChange={(e) => updateVehicle(vehicle.id, 'mileage', e.target.value)}
-                          placeholder="Enter mileage"
-                          className="rounded-md"
-                        />
-                      </div>
-                      <div>
-                        <Label>Vehicle Value</Label>
-                        <Input
-                          value={vehicle.vehicleValue}
-                          onChange={(e) => updateVehicle(vehicle.id, 'vehicleValue', e.target.value)}
-                          placeholder="Enter vehicle value"
-                          className="rounded-md"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Insurance Options */}
-                    <div className="space-y-3">
-                      <h4 className="font-medium">Insurance Coverage</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`mandatory-${vehicle.id}`}
-                            checked={vehicle.mandatoryInsurance}
-                            onCheckedChange={(checked) => updateVehicle(vehicle.id, 'mandatoryInsurance', checked)}
-                          />
-                          <Label htmlFor={`mandatory-${vehicle.id}`}>Mandatory Insurance</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`accident-${vehicle.id}`}
-                            checked={vehicle.accidentInsurance}
-                            onCheckedChange={(checked) => updateVehicle(vehicle.id, 'accidentInsurance', checked)}
-                          />
-                          <Label htmlFor={`accident-${vehicle.id}`}>Accident Insurance</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`injury-${vehicle.id}`}
-                            checked={vehicle.injuryInsurance}
-                            onCheckedChange={(checked) => updateVehicle(vehicle.id, 'injuryInsurance', checked)}
-                          />
-                          <Label htmlFor={`injury-${vehicle.id}`}>Injury Insurance</Label>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <Label>Windows Insurance</Label>
-                          <Select
-                            value={vehicle.windowsInsurance}
-                            onValueChange={(value) => updateVehicle(vehicle.id, 'windowsInsurance', value)}
-                          >
-                            <SelectTrigger className="rounded-md">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-md">
-                              <SelectItem value="10">10</SelectItem>
-                              <SelectItem value="20">20</SelectItem>
-                              <SelectItem value="30">30</SelectItem>
-                              <SelectItem value="50">50</SelectItem>
-                              <SelectItem value="100">100</SelectItem>
-                              <SelectItem value="no-limit">No Limit</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        {!formData.ownerSameAsInsurer && (
+                <Card key={vehicle.id} className="border-2 border-gray-400 rounded-lg shadow-sm">
+                  <CardContent className="p-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* Left side - User inputs */}
+                      <div className="space-y-4">
+                        {/* Vehicle Identity */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                           <div>
-                            <Label>Owner TIN</Label>
+                            <Label className="text-sm">VIN</Label>
                             <Input
-                              value={vehicle.ownerTin}
-                              onChange={(e) => updateVehicle(vehicle.id, 'ownerTin', e.target.value)}
-                              placeholder="Enter owner TIN"
-                              className="rounded-md"
+                              value={vehicle.vin}
+                              onChange={(e) => updateVehicle(vehicle.id, 'vin', e.target.value)}
+                              placeholder="17-character VIN"
+                              maxLength={17}
+                              className="rounded-md h-9"
                             />
+                          </div>
+                          <div>
+                            <Label className="text-sm">License Plate</Label>
+                            <Input
+                              value={vehicle.licensePlate}
+                              onChange={(e) => updateVehicle(vehicle.id, 'licensePlate', e.target.value)}
+                              placeholder="XXX-XXXX"
+                              className="rounded-md h-9"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Vehicle Details */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div>
+                            <Label className="text-sm">Mileage</Label>
+                            <Input
+                              value={vehicle.mileage}
+                              onChange={(e) => updateVehicle(vehicle.id, 'mileage', e.target.value)}
+                              placeholder="Enter mileage"
+                              className="rounded-md h-9"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-sm">Vehicle Value</Label>
+                            <Input
+                              value={vehicle.vehicleValue}
+                              onChange={(e) => updateVehicle(vehicle.id, 'vehicleValue', e.target.value)}
+                              placeholder="Enter vehicle value"
+                              className="rounded-md h-9"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Insurance Options */}
+                        <div className="space-y-3">
+                          <h4 className="font-medium text-sm">Insurance Coverage</h4>
+                          <div className="grid grid-cols-1 gap-2">
+                            <div className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`mandatory-${vehicle.id}`}
+                                checked={vehicle.mandatoryInsurance}
+                                onCheckedChange={(checked) => updateVehicle(vehicle.id, 'mandatoryInsurance', checked)}
+                              />
+                              <Label htmlFor={`mandatory-${vehicle.id}`} className="text-sm">Mandatory Insurance</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`accident-${vehicle.id}`}
+                                checked={vehicle.accidentInsurance}
+                                onCheckedChange={(checked) => updateVehicle(vehicle.id, 'accidentInsurance', checked)}
+                              />
+                              <Label htmlFor={`accident-${vehicle.id}`} className="text-sm">Accident Insurance</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`injury-${vehicle.id}`}
+                                checked={vehicle.injuryInsurance}
+                                onCheckedChange={(checked) => updateVehicle(vehicle.id, 'injuryInsurance', checked)}
+                              />
+                              <Label htmlFor={`injury-${vehicle.id}`} className="text-sm">Injury Insurance</Label>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                              <Label className="text-sm">Windows Insurance</Label>
+                              <Select
+                                value={vehicle.windowsInsurance}
+                                onValueChange={(value) => updateVehicle(vehicle.id, 'windowsInsurance', value)}
+                              >
+                                <SelectTrigger className="rounded-md h-9">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-md">
+                                  <SelectItem value="10">10</SelectItem>
+                                  <SelectItem value="20">20</SelectItem>
+                                  <SelectItem value="30">30</SelectItem>
+                                  <SelectItem value="50">50</SelectItem>
+                                  <SelectItem value="100">100</SelectItem>
+                                  <SelectItem value="no-limit">No Limit</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {!formData.ownerSameAsInsurer && (
+                              <div>
+                                <Label className="text-sm">Owner TIN</Label>
+                                <Input
+                                  value={vehicle.ownerTin}
+                                  onChange={(e) => updateVehicle(vehicle.id, 'ownerTin', e.target.value)}
+                                  placeholder="Enter owner TIN"
+                                  className="rounded-md h-9"
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right side - Vehicle Data */}
+                      <div>
+                        {vehicle.cebia && (
+                          <div className="p-4 bg-green-50 border-2 border-green-200 rounded-lg h-full">
+                            <h4 className="font-medium text-green-800 mb-3">Vehicle Data</h4>
+                            <div className="space-y-2 text-sm">
+                              <div className="flex justify-between">
+                                <span className="font-medium text-green-700">Type:</span>
+                                <span className="text-green-600">{vehicle.cebia.type}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-medium text-green-700">Manufacturer:</span>
+                                <span className="text-green-600">{vehicle.cebia.manufacturer}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-medium text-green-700">Model:</span>
+                                <span className="text-green-600">{vehicle.cebia.model}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-medium text-green-700">Year:</span>
+                                <span className="text-green-600">{vehicle.cebia.year}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-medium text-green-700">Engine:</span>
+                                <span className="text-green-600">{vehicle.cebia.engineDisplacement}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-medium text-green-700">Power:</span>
+                                <span className="text-green-600">{vehicle.cebia.enginePower}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-medium text-green-700">Max Weight:</span>
+                                <span className="text-green-600">{vehicle.cebia.maxWeight}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-medium text-green-700">Seats:</span>
+                                <span className="text-green-600">{vehicle.cebia.seats}</span>
+                              </div>
+                            </div>
                           </div>
                         )}
                       </div>
