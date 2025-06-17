@@ -5,6 +5,8 @@ import { ResultsSection } from "@/components/ResultsSection";
 import { AdminPanel } from "@/components/AdminPanel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { AlertTriangle, X } from "lucide-react";
 
 interface ExtractedFile {
   file: File;
@@ -29,6 +31,7 @@ const Index = () => {
   const [isExtracting, setIsExtracting] = useState(false);
   const [isDecoding, setIsDecoding] = useState(false);
   const [decodingProgress, setDecodingProgress] = useState(0);
+  const [showUnextractedDialog, setShowUnextractedDialog] = useState(false);
 
   const handleExtract = async () => {
     if (uploadedFiles.length === 0) return;
@@ -85,6 +88,21 @@ const Index = () => {
   };
 
   const handleDecode = async () => {
+    // Check if there are unextracted files
+    const unextractedFiles = uploadedFiles.filter(file => {
+      const extractedFile = extractedFiles.find(ef => ef.file.name === file.name);
+      return !extractedFile || extractedFile.status === 'processing';
+    });
+
+    if (unextractedFiles.length > 0) {
+      setShowUnextractedDialog(true);
+      return;
+    }
+
+    await performDecode();
+  };
+
+  const performDecode = async () => {
     // Collect all VINs from extracted files and manual additions
     const allVins: string[] = [];
     extractedFiles.forEach(file => {
@@ -131,6 +149,19 @@ const Index = () => {
     setDecodingProgress(0);
   };
 
+  const handleExtractAndDecode = async () => {
+    setShowUnextractedDialog(false);
+    await handleExtract();
+    setTimeout(async () => {
+      await performDecode();
+    }, 1000);
+  };
+
+  const handleProceedWithoutExtract = async () => {
+    setShowUnextractedDialog(false);
+    await performDecode();
+  };
+
   const updateExtractedVin = (fileIndex: number, vinIndex: number, newVin: string) => {
     const updatedFiles = [...extractedFiles];
     updatedFiles[fileIndex].extractedVins[vinIndex] = newVin;
@@ -156,12 +187,35 @@ const Index = () => {
     setExtractedFiles(updatedFiles);
   };
 
+  const removeManualVehicle = (vinToRemove: string) => {
+    const updatedFiles = [...extractedFiles];
+    const manualFileIndex = updatedFiles.findIndex(f => f.file.name === 'Manual Entry');
+    
+    if (manualFileIndex >= 0) {
+      updatedFiles[manualFileIndex].extractedVins = updatedFiles[manualFileIndex].extractedVins.filter(vin => vin !== vinToRemove);
+      
+      // If no VINs left, remove the manual entry file completely
+      if (updatedFiles[manualFileIndex].extractedVins.length === 0) {
+        updatedFiles.splice(manualFileIndex, 1);
+      }
+    }
+    
+    setExtractedFiles(updatedFiles);
+  };
+
   const hasExtractedData = extractedFiles.some(f => f.extractedVins.length > 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-orange-50">
       <div className="container mx-auto p-6">
-        <header className="text-center mb-8">
+        <header className="text-center mb-8 relative">
+          <div className="absolute left-0 top-0">
+            <img 
+              src="/lovable-uploads/fe5d5630-7728-44c7-8b57-8cc5139a93e7.png" 
+              alt="Petrisk Logo" 
+              className="h-12 w-auto"
+            />
+          </div>
           <h1 className="text-4xl font-bold text-purple-800 mb-2">
             VinScout Document Processor
           </h1>
@@ -191,6 +245,7 @@ const Index = () => {
                   isExtracting={isExtracting}
                   onUpdateExtractedVin={updateExtractedVin}
                   onAddManualVehicle={addManualVehicle}
+                  onRemoveManualVehicle={removeManualVehicle}
                 />
               </div>
               
@@ -209,7 +264,7 @@ const Index = () => {
                   disabled={isDecoding}
                   className="w-full bg-green-600 hover:bg-green-700 text-white py-6 text-lg rounded-lg"
                 >
-                  {isDecoding ? `Decoding... ${decodingProgress}%` : 'Decode Vehicle Data from CEBIA'}
+                  {isDecoding ? `Decoding... ${decodingProgress}%` : 'Decode'}
                 </Button>
               </div>
             )}
@@ -225,6 +280,46 @@ const Index = () => {
             <AdminPanel />
           </TabsContent>
         </Tabs>
+
+        {/* Unextracted Files Dialog */}
+        <Dialog open={showUnextractedDialog} onOpenChange={setShowUnextractedDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <div className="flex items-center justify-between">
+                <DialogTitle className="flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                  Unextracted Files
+                </DialogTitle>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowUnextractedDialog(false)}
+                  className="h-6 w-6 p-0"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              <DialogDescription>
+                There are files that haven't been extracted yet. What would you like to do?
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={handleExtractAndDecode}
+                className="flex-1"
+              >
+                Extract
+              </Button>
+              <Button
+                onClick={handleProceedWithoutExtract}
+                className="flex-1"
+              >
+                Proceed
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

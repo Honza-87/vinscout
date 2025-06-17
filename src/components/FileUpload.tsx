@@ -1,10 +1,11 @@
+
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { Upload, FileText, X, Zap, Plus } from "lucide-react";
+import { Upload, FileText, X, Zap, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface ExtractedFile {
@@ -22,6 +23,7 @@ interface FileUploadProps {
   isExtracting: boolean;
   onUpdateExtractedVin: (fileIndex: number, vinIndex: number, newVin: string) => void;
   onAddManualVehicle: (vin: string) => void;
+  onRemoveManualVehicle: (vin: string) => void;
 }
 
 export const FileUpload = ({ 
@@ -31,7 +33,8 @@ export const FileUpload = ({
   onExtract,
   isExtracting,
   onUpdateExtractedVin,
-  onAddManualVehicle
+  onAddManualVehicle,
+  onRemoveManualVehicle
 }: FileUploadProps) => {
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [manualInput, setManualInput] = useState("");
@@ -140,7 +143,6 @@ export const FileUpload = ({
       return;
     }
 
-    // Clear the input after successful addition
     setManualInput("");
   };
 
@@ -266,10 +268,18 @@ export const FileUpload = ({
           {manualVins.length > 0 && (
             <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
               <p className="text-sm font-medium text-green-700 mb-2">Added Vehicles:</p>
-              <div className="space-y-1">
+              <div className="space-y-2">
                 {manualVins.map((vin, index) => (
-                  <div key={index} className="text-sm text-green-600 font-mono">
-                    {vin}
+                  <div key={index} className="flex items-center justify-between bg-white p-2 rounded border">
+                    <span className="text-sm text-green-600 font-mono">{vin}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onRemoveManualVehicle(vin)}
+                      className="text-red-500 hover:text-red-700 h-6 w-6 p-0"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
                   </div>
                 ))}
               </div>
