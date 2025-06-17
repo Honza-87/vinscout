@@ -80,7 +80,7 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `fleeto-export-${new Date().toISOString().split('T')[0]}.json`;
+    link.download = `vinscout-export-${new Date().toISOString().split('T')[0]}.json`;
     link.click();
     URL.revokeObjectURL(url);
     toast.success("Data exported to JSON");
@@ -93,8 +93,8 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
 
   return (
     <div className="space-y-6">
-      <Card className="border-2 border-purple-200 shadow-lg">
-        <CardHeader className="bg-gradient-to-r from-purple-600 to-orange-500 text-white">
+      <Card className="border-2 border-purple-200 shadow-lg rounded-lg">
+        <CardHeader className="bg-gradient-to-r from-purple-600 to-orange-500 text-white rounded-t-lg">
           <CardTitle>Vehicle Results</CardTitle>
         </CardHeader>
         <CardContent className="p-6">
@@ -105,9 +105,9 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
                 placeholder="Enter VIN (17 chars) or License Plate (7 chars)"
                 value={manualInput}
                 onChange={(e) => setManualInput(e.target.value)}
-                className="flex-1"
+                className="flex-1 rounded-md"
               />
-              <Button onClick={handleManualAdd} className="bg-purple-600 hover:bg-purple-700">
+              <Button onClick={handleManualAdd} className="bg-purple-600 hover:bg-purple-700 rounded-md">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Vehicle
               </Button>
@@ -125,7 +125,7 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
           ) : (
             <div className="space-y-6">
               {vehicles.map((vehicle) => (
-                <Card key={vehicle.id} className="border border-gray-200">
+                <Card key={vehicle.id} className="border border-gray-200 rounded-lg">
                   <CardContent className="p-4 space-y-4">
                     {/* Vehicle Identity */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -136,6 +136,7 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
                           onChange={(e) => updateVehicle(vehicle.id, 'vin', e.target.value)}
                           placeholder="17-character VIN"
                           maxLength={17}
+                          className="rounded-md"
                         />
                       </div>
                       <div>
@@ -144,19 +145,24 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
                           value={vehicle.licensePlate}
                           onChange={(e) => updateVehicle(vehicle.id, 'licensePlate', e.target.value)}
                           placeholder="XXX-XXXX"
+                          className="rounded-md"
                         />
                       </div>
                     </div>
 
                     {/* CEBIA Data Display */}
                     {vehicle.cebia && (
-                      <div className="p-3 bg-blue-50 rounded-lg">
-                        <h4 className="font-medium text-blue-800 mb-2">CEBIA Vehicle Data</h4>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
-                          <div><span className="font-medium">Type:</span> {vehicle.cebia.type}</div>
-                          <div><span className="font-medium">Manufacturer:</span> {vehicle.cebia.manufacturer}</div>
-                          <div><span className="font-medium">Model:</span> {vehicle.cebia.model}</div>
-                          <div><span className="font-medium">Year:</span> {vehicle.cebia.year}</div>
+                      <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                        <h4 className="font-medium text-green-800 mb-3">CEBIA Vehicle Data</h4>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                          <div><span className="font-medium text-green-700">Type:</span> <span className="text-green-600">{vehicle.cebia.type}</span></div>
+                          <div><span className="font-medium text-green-700">Manufacturer:</span> <span className="text-green-600">{vehicle.cebia.manufacturer}</span></div>
+                          <div><span className="font-medium text-green-700">Model:</span> <span className="text-green-600">{vehicle.cebia.model}</span></div>
+                          <div><span className="font-medium text-green-700">Year:</span> <span className="text-green-600">{vehicle.cebia.year}</span></div>
+                          <div><span className="font-medium text-green-700">Engine:</span> <span className="text-green-600">{vehicle.cebia.engineDisplacement}</span></div>
+                          <div><span className="font-medium text-green-700">Power:</span> <span className="text-green-600">{vehicle.cebia.enginePower}</span></div>
+                          <div><span className="font-medium text-green-700">Max Weight:</span> <span className="text-green-600">{vehicle.cebia.maxWeight}</span></div>
+                          <div><span className="font-medium text-green-700">Seats:</span> <span className="text-green-600">{vehicle.cebia.seats}</span></div>
                         </div>
                       </div>
                     )}
@@ -169,6 +175,7 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
                           value={vehicle.mileage}
                           onChange={(e) => updateVehicle(vehicle.id, 'mileage', e.target.value)}
                           placeholder="Enter mileage"
+                          className="rounded-md"
                         />
                       </div>
                       <div>
@@ -177,6 +184,7 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
                           value={vehicle.vehicleValue}
                           onChange={(e) => updateVehicle(vehicle.id, 'vehicleValue', e.target.value)}
                           placeholder="Enter vehicle value"
+                          className="rounded-md"
                         />
                       </div>
                     </div>
@@ -218,10 +226,10 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
                             value={vehicle.windowsInsurance}
                             onValueChange={(value) => updateVehicle(vehicle.id, 'windowsInsurance', value)}
                           >
-                            <SelectTrigger>
+                            <SelectTrigger className="rounded-md">
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="rounded-md">
                               <SelectItem value="10">10</SelectItem>
                               <SelectItem value="20">20</SelectItem>
                               <SelectItem value="30">30</SelectItem>
@@ -239,6 +247,7 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
                               value={vehicle.ownerTin}
                               onChange={(e) => updateVehicle(vehicle.id, 'ownerTin', e.target.value)}
                               placeholder="Enter owner TIN"
+                              className="rounded-md"
                             />
                           </div>
                         )}
@@ -253,11 +262,11 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
           {/* Export Buttons */}
           {vehicles.length > 0 && (
             <div className="flex gap-4 mt-6 pt-4 border-t border-gray-200">
-              <Button onClick={exportJSON} className="bg-orange-500 hover:bg-orange-600">
+              <Button onClick={exportJSON} className="bg-orange-500 hover:bg-orange-600 rounded-md">
                 <FileJson className="h-4 w-4 mr-2" />
                 Export JSON
               </Button>
-              <Button onClick={downloadForm} variant="outline" className="border-purple-300 text-purple-600 hover:bg-purple-50">
+              <Button onClick={downloadForm} variant="outline" className="border-purple-300 text-purple-600 hover:bg-purple-50 rounded-md">
                 <Download className="h-4 w-4 mr-2" />
                 Download Form
               </Button>

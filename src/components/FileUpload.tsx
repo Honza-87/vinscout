@@ -4,15 +4,28 @@ import { useDropzone } from "react-dropzone";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Upload, FileText, X } from "lucide-react";
+import { Upload, FileText, X, Play } from "lucide-react";
 import { toast } from "sonner";
 
 interface FileUploadProps {
   onFilesUploaded: (files: File[]) => void;
   uploadedFiles: File[];
+  onProcess: () => void;
+  isProcessing: boolean;
+  processingProgress: number;
+  processingStage: string;
+  processCompleted: boolean;
 }
 
-export const FileUpload = ({ onFilesUploaded, uploadedFiles }: FileUploadProps) => {
+export const FileUpload = ({ 
+  onFilesUploaded, 
+  uploadedFiles, 
+  onProcess, 
+  isProcessing, 
+  processingProgress, 
+  processingStage,
+  processCompleted 
+}: FileUploadProps) => {
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -84,73 +97,101 @@ export const FileUpload = ({ onFilesUploaded, uploadedFiles }: FileUploadProps) 
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
+  const getCardBackgroundClass = () => {
+    if (isProcessing) return "bg-gray-100";
+    if (processCompleted) return "bg-green-50";
+    return "";
+  };
+
   return (
-    <Card className="border-2 border-purple-200 shadow-lg">
-      <CardHeader className="bg-gradient-to-r from-purple-600 to-orange-500 text-white">
+    <Card className={`border-2 border-purple-200 shadow-lg rounded-lg ${getCardBackgroundClass()}`}>
+      <CardHeader className="bg-gradient-to-r from-purple-600 to-orange-500 text-white rounded-t-lg">
         <CardTitle className="flex items-center gap-2">
           <Upload className="h-5 w-5" />
           Document Upload
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
-        <div
-          {...getRootProps()}
-          className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-            isDragActive
-              ? "border-purple-400 bg-purple-50"
-              : "border-gray-300 hover:border-purple-400 hover:bg-purple-50"
-          }`}
-        >
-          <input {...getInputProps()} />
-          <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-          {isDragActive ? (
-            <p className="text-purple-600 font-medium">Drop the files here...</p>
-          ) : (
-            <>
-              <p className="text-gray-600 mb-2">
-                Drag & drop files here, or{" "}
-                <span className="text-purple-600 font-medium">browse files</span>
-              </p>
-              <p className="text-sm text-gray-500">
-                Supports PDF, DOCX, XLSX (max 50MB)
-              </p>
-            </>
-          )}
-        </div>
+        {isProcessing ? (
+          <div className="text-center py-8">
+            <div className="mb-4">
+              <Progress value={processingProgress} className="h-4 rounded-full" />
+            </div>
+            <p className="text-lg font-medium text-gray-700 mb-2">{processingStage}</p>
+            <p className="text-sm text-gray-500">{processingProgress}% complete</p>
+          </div>
+        ) : (
+          <>
+            <div
+              {...getRootProps()}
+              className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+                isDragActive
+                  ? "border-purple-400 bg-purple-50"
+                  : "border-gray-300 hover:border-purple-400 hover:bg-purple-50"
+              }`}
+            >
+              <input {...getInputProps()} />
+              <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+              {isDragActive ? (
+                <p className="text-purple-600 font-medium">Drop the files here...</p>
+              ) : (
+                <>
+                  <p className="text-gray-600 mb-2">
+                    Drag & drop files here, or{" "}
+                    <span className="text-purple-600 font-medium">browse files</span>
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Supports PDF, DOCX, XLSX (max 50MB)
+                  </p>
+                </>
+              )}
+            </div>
 
-        {uploadedFiles.length > 0 && (
-          <div className="mt-6 space-y-3">
-            <h4 className="font-medium text-gray-700">Uploaded Files:</h4>
-            {uploadedFiles.map((file, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <FileText className="h-5 w-5 text-purple-600" />
-                  <div>
-                    <p className="font-medium text-sm">{file.name}</p>
-                    <p className="text-xs text-gray-500">
-                      {formatFileSize(file.size)}
-                      {file.type === 'application/pdf' && ' • PDF'}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  {uploadProgress[file.name] && uploadProgress[file.name] < 100 && (
-                    <div className="w-24">
-                      <Progress value={uploadProgress[file.name]} className="h-2" />
-                    </div>
-                  )}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeFile(index)}
-                    className="text-red-500 hover:text-red-700"
+            {uploadedFiles.length > 0 && (
+              <div className="mt-6 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium text-gray-700">Uploaded Files:</h4>
+                  <Button 
+                    onClick={onProcess} 
+                    className="bg-green-600 hover:bg-green-700 rounded-md"
+                    disabled={isProcessing}
                   >
-                    <X className="h-4 w-4" />
+                    <Play className="h-4 w-4 mr-2" />
+                    Process
                   </Button>
                 </div>
+                {uploadedFiles.map((file, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <FileText className="h-5 w-5 text-purple-600" />
+                      <div>
+                        <p className="font-medium text-sm">{file.name}</p>
+                        <p className="text-xs text-gray-500">
+                          {formatFileSize(file.size)}
+                          {file.type === 'application/pdf' && ' • PDF'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {uploadProgress[file.name] && uploadProgress[file.name] < 100 && (
+                        <div className="w-24">
+                          <Progress value={uploadProgress[file.name]} className="h-2 rounded-full" />
+                        </div>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeFile(index)}
+                        className="text-red-500 hover:text-red-700 rounded-md"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </CardContent>
     </Card>
