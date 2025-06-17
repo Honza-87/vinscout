@@ -6,7 +6,7 @@ import { AdminPanel } from "@/components/AdminPanel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { AlertTriangle, X } from "lucide-react";
+import { AlertTriangle, X, Zap } from "lucide-react";
 
 interface ExtractedFile {
   file: File;
@@ -236,7 +236,7 @@ const Index = () => {
 
           <TabsContent value="processing">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-              <div className="space-y-6">
+              <div className="space-y-6 flex flex-col">
                 <FileUpload 
                   uploadedFiles={uploadedFiles}
                   onFilesUploaded={setUploadedFiles}
@@ -249,7 +249,7 @@ const Index = () => {
                 />
               </div>
               
-              <div className="space-y-6">
+              <div className="space-y-6 flex flex-col">
                 <InsuranceForm 
                   formData={formData}
                   onFormDataChange={setFormData}
@@ -294,7 +294,7 @@ const Index = () => {
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowUnextractedDialog(false)}
-                  className="h-6 w-6 p-0"
+                  className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -305,17 +305,18 @@ const Index = () => {
             </DialogHeader>
             <DialogFooter className="flex gap-2">
               <Button
-                variant="outline"
-                onClick={handleExtractAndDecode}
-                className="flex-1"
+                onClick={handleProceedWithoutExtract}
+                className="flex-1 bg-green-600 hover:bg-green-700"
               >
-                Extract
+                Decode
               </Button>
               <Button
-                onClick={handleProceedWithoutExtract}
-                className="flex-1"
+                variant="outline"
+                onClick={handleExtractAndDecode}
+                className="flex-1 bg-orange-600 hover:bg-orange-700 text-white border-orange-600"
               >
-                Proceed
+                <Zap className="h-4 w-4 mr-2" />
+                Extract
               </Button>
             </DialogFooter>
           </DialogContent>
