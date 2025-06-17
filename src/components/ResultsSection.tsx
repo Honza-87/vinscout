@@ -1,12 +1,11 @@
 
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Download, FileJson } from "lucide-react";
+import { Download, FileJson } from "lucide-react";
 import { toast } from "sonner";
 
 interface ResultsSectionProps {
@@ -16,57 +15,11 @@ interface ResultsSectionProps {
 }
 
 export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: ResultsSectionProps) => {
-  const [manualInput, setManualInput] = useState("");
-
-  const addVehicle = (vehicleData?: any) => {
-    const newVehicle = {
-      id: Date.now(),
-      vin: vehicleData?.vin || "",
-      licensePlate: vehicleData?.licensePlate || "",
-      mileage: "",
-      vehicleValue: "",
-      mandatoryInsurance: false,
-      accidentInsurance: false,
-      injuryInsurance: false,
-      windowsInsurance: "10",
-      ownerTin: formData.ownerSameAsInsurer ? "" : "",
-      cebia: vehicleData?.cebia || null,
-      ...vehicleData
-    };
-    onVehiclesChange([...vehicles, newVehicle]);
-  };
-
   const updateVehicle = (id: number, field: string, value: any) => {
     const updatedVehicles = vehicles.map(vehicle =>
       vehicle.id === id ? { ...vehicle, [field]: value } : vehicle
     );
     onVehiclesChange(updatedVehicles);
-  };
-
-  const handleManualAdd = () => {
-    if (!manualInput.trim()) {
-      toast.error("Please enter a VIN or license plate");
-      return;
-    }
-
-    const cleanInput = manualInput.trim().toUpperCase();
-    let vehicleData: any = {};
-
-    if (cleanInput.length === 17) {
-      // Assume it's a VIN
-      vehicleData.vin = cleanInput;
-      toast.success("VIN detected and added");
-    } else if (cleanInput.length === 7 || (cleanInput.length === 8 && cleanInput.includes('-'))) {
-      // Assume it's a license plate
-      vehicleData.licensePlate = cleanInput;
-      toast.success("License plate detected and added");
-    } else {
-      toast.error("Invalid format. Enter a 17-character VIN or 7-character license plate");
-      return;
-    }
-
-    addVehicle(vehicleData);
-    setManualInput("");
   };
 
   const exportJSON = () => {
@@ -98,34 +51,15 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
           <CardTitle>Vehicle Results</CardTitle>
         </CardHeader>
         <CardContent className="p-6">
-          {/* Manual Vehicle Addition */}
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-            <div className="flex gap-2 mb-2">
-              <Input
-                placeholder="Enter VIN (17 chars) or License Plate (7 chars)"
-                value={manualInput}
-                onChange={(e) => setManualInput(e.target.value)}
-                className="flex-1 rounded-md"
-              />
-              <Button onClick={handleManualAdd} className="bg-purple-600 hover:bg-purple-700 rounded-md">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Vehicle
-              </Button>
-            </div>
-            <p className="text-sm text-gray-600">
-              Auto-detects VIN (17 characters) or License Plate (7 characters)
-            </p>
-          </div>
-
           {/* Vehicle List */}
           {vehicles.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
-              <p>No vehicles added yet. Upload documents or manually add vehicles above.</p>
+              <p>No vehicles decoded yet. Extract VINs from documents and click "Decode" to see results here.</p>
             </div>
           ) : (
             <div className="space-y-6">
               {vehicles.map((vehicle) => (
-                <Card key={vehicle.id} className="border border-gray-200 rounded-lg">
+                <Card key={vehicle.id} className="border-2 border-gray-300 rounded-lg shadow-sm">
                   <CardContent className="p-4 space-y-4">
                     {/* Vehicle Identity */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -150,10 +84,10 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
                       </div>
                     </div>
 
-                    {/* CEBIA Data Display */}
+                    {/* Vehicle Data Display */}
                     {vehicle.cebia && (
-                      <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                        <h4 className="font-medium text-green-800 mb-3">CEBIA Vehicle Data</h4>
+                      <div className="p-4 bg-green-50 border-2 border-green-200 rounded-lg">
+                        <h4 className="font-medium text-green-800 mb-3">Vehicle Data</h4>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
                           <div><span className="font-medium text-green-700">Type:</span> <span className="text-green-600">{vehicle.cebia.type}</span></div>
                           <div><span className="font-medium text-green-700">Manufacturer:</span> <span className="text-green-600">{vehicle.cebia.manufacturer}</span></div>

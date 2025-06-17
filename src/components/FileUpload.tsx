@@ -3,30 +3,39 @@ import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { Upload, FileText, X, Play } from "lucide-react";
+import { Upload, FileText, X, Zap, Plus } from "lucide-react";
 import { toast } from "sonner";
 
+interface ExtractedFile {
+  file: File;
+  status: 'processing' | 'success' | 'error';
+  progress: number;
+  extractedVins: string[];
+}
+
 interface FileUploadProps {
-  onFilesUploaded: (files: File[]) => void;
   uploadedFiles: File[];
-  onProcess: () => void;
-  isProcessing: boolean;
-  processingProgress: number;
-  processingStage: string;
-  processCompleted: boolean;
+  onFilesUploaded: (files: File[]) => void;
+  extractedFiles: ExtractedFile[];
+  onExtract: () => void;
+  isExtracting: boolean;
+  onUpdateExtractedVin: (fileIndex: number, vinIndex: number, newVin: string) => void;
+  onAddManualVehicle: (vin: string) => void;
 }
 
 export const FileUpload = ({ 
+  uploadedFiles,
   onFilesUploaded, 
-  uploadedFiles, 
-  onProcess, 
-  isProcessing, 
-  processingProgress, 
-  processingStage,
-  processCompleted 
+  extractedFiles,
+  onExtract,
+  isExtracting,
+  onUpdateExtractedVin,
+  onAddManualVehicle
 }: FileUploadProps) => {
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
+  const [manualInput, setManualInput] = useState("");
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     // Validate file types
@@ -97,71 +106,96 @@ export const FileUpload = ({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const getCardBackgroundClass = () => {
-    if (isProcessing) return "bg-gray-100";
-    if (processCompleted) return "bg-green-50";
-    return "";
+  const getFileBackgroundClass = (file: File) => {
+    const extractedFile = extractedFiles.find(ef => ef.file.name === file.name);
+    if (!extractedFile) return "bg-gray-50";
+    
+    switch (extractedFile.status) {
+      case 'processing':
+        return "bg-gray-100";
+      case 'success':
+        return "bg-green-50 border-green-200";
+      case 'error':
+        return "bg-yellow-50 border-yellow-200";
+      default:
+        return "bg-gray-50";
+    }
+  };
+
+  const handleManualAdd = () => {
+    if (!manualInput.trim()) {
+      toast.error("Please enter a VIN or license plate");
+      return;
+    }
+
+    const cleanInput = manualInput.trim().toUpperCase();
+    
+    if (cleanInput.length === 17) {
+      onAddManualVehicle(cleanInput);
+      toast.success("VIN added successfully");
+    } else if (cleanInput.length === 7 || (cleanInput.length === 8 && cleanInput.includes('-'))) {
+      onAddManualVehicle(cleanInput);
+      toast.success("License plate added successfully");
+    } else {
+      toast.error("Invalid format. Enter a 17-character VIN or 7-character license plate");
+      return;
+    }
+
+    setManualInput("");
   };
 
   return (
-    <Card className={`border-2 border-purple-200 shadow-lg rounded-lg ${getCardBackgroundClass()}`}>
+    <Card className="border-2 border-purple-200 shadow-lg rounded-lg">
       <CardHeader className="bg-gradient-to-r from-purple-600 to-orange-500 text-white rounded-t-lg">
         <CardTitle className="flex items-center gap-2">
           <Upload className="h-5 w-5" />
-          Document Upload
+          Document Upload & VIN Extraction
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
-        {isProcessing ? (
-          <div className="text-center py-8">
-            <div className="mb-4">
-              <Progress value={processingProgress} className="h-4 rounded-full" />
-            </div>
-            <p className="text-lg font-medium text-gray-700 mb-2">{processingStage}</p>
-            <p className="text-sm text-gray-500">{processingProgress}% complete</p>
-          </div>
-        ) : (
-          <>
-            <div
-              {...getRootProps()}
-              className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-                isDragActive
-                  ? "border-purple-400 bg-purple-50"
-                  : "border-gray-300 hover:border-purple-400 hover:bg-purple-50"
-              }`}
-            >
-              <input {...getInputProps()} />
-              <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              {isDragActive ? (
-                <p className="text-purple-600 font-medium">Drop the files here...</p>
-              ) : (
-                <>
-                  <p className="text-gray-600 mb-2">
-                    Drag & drop files here, or{" "}
-                    <span className="text-purple-600 font-medium">browse files</span>
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Supports PDF, DOCX, XLSX (max 50MB)
-                  </p>
-                </>
-              )}
-            </div>
+        <div
+          {...getRootProps()}
+          className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+            isDragActive
+              ? "border-purple-400 bg-purple-50"
+              : "border-gray-300 hover:border-purple-400 hover:bg-purple-50"
+          }`}
+        >
+          <input {...getInputProps()} />
+          <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+          {isDragActive ? (
+            <p className="text-purple-600 font-medium">Drop the files here...</p>
+          ) : (
+            <>
+              <p className="text-gray-600 mb-2">
+                Drag & drop files here, or{" "}
+                <span className="text-purple-600 font-medium">browse files</span>
+              </p>
+              <p className="text-sm text-gray-500">
+                Supports PDF, DOCX, XLSX (max 50MB)
+              </p>
+            </>
+          )}
+        </div>
 
-            {uploadedFiles.length > 0 && (
-              <div className="mt-6 space-y-3">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-medium text-gray-700">Uploaded Files:</h4>
-                  <Button 
-                    onClick={onProcess} 
-                    className="bg-green-600 hover:bg-green-700 rounded-md"
-                    disabled={isProcessing}
-                  >
-                    <Play className="h-4 w-4 mr-2" />
-                    Process
-                  </Button>
-                </div>
-                {uploadedFiles.map((file, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+        {uploadedFiles.length > 0 && (
+          <div className="mt-6 space-y-3">
+            <div className="flex items-center justify-between">
+              <h4 className="font-medium text-gray-700">Uploaded Files:</h4>
+              <Button 
+                onClick={onExtract} 
+                className="bg-orange-600 hover:bg-orange-700 rounded-md"
+                disabled={isExtracting}
+              >
+                <Zap className="h-4 w-4 mr-2" />
+                {isExtracting ? "Extracting..." : "Extract"}
+              </Button>
+            </div>
+            {uploadedFiles.map((file, index) => {
+              const extractedFile = extractedFiles.find(ef => ef.file.name === file.name);
+              return (
+                <div key={index} className={`p-3 rounded-lg border ${getFileBackgroundClass(file)}`}>
+                  <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
                       <FileText className="h-5 w-5 text-purple-600" />
                       <div>
@@ -188,11 +222,56 @@ export const FileUpload = ({
                       </Button>
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </>
+                  
+                  {extractedFile?.status === 'processing' && (
+                    <div className="mt-2">
+                      <Progress value={extractedFile.progress} className="h-2 rounded-full" />
+                      <p className="text-xs text-gray-500 mt-1">Extracting VINs...</p>
+                    </div>
+                  )}
+                  
+                  {extractedFile?.extractedVins && extractedFile.extractedVins.length > 0 && (
+                    <div className="mt-2 space-y-2">
+                      <p className="text-sm font-medium text-green-700">Extracted VINs:</p>
+                      {extractedFile.extractedVins.map((vin, vinIndex) => (
+                        <Input
+                          key={vinIndex}
+                          value={vin}
+                          onChange={(e) => onUpdateExtractedVin(index, vinIndex, e.target.value)}
+                          className="text-sm rounded-md"
+                          placeholder="VIN"
+                        />
+                      ))}
+                    </div>
+                  )}
+                  
+                  {extractedFile?.status === 'error' && (
+                    <p className="text-sm text-yellow-700 mt-2">No VINs found in this document</p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         )}
+
+        {/* Manual Vehicle Addition */}
+        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+          <div className="flex gap-2 mb-2">
+            <Input
+              placeholder="Enter VIN (17 chars) or License Plate (7 chars)"
+              value={manualInput}
+              onChange={(e) => setManualInput(e.target.value)}
+              className="flex-1 rounded-md"
+            />
+            <Button onClick={handleManualAdd} className="bg-purple-600 hover:bg-purple-700 rounded-md">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Vehicle
+            </Button>
+          </div>
+          <p className="text-sm text-gray-600">
+            Auto-detects VIN (17 characters) or License Plate (7 characters)
+          </p>
+        </div>
       </CardContent>
     </Card>
   );
