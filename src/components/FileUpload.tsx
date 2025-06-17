@@ -34,7 +34,7 @@ export const FileUpload = ({
   onAddManualVehicle
 }: FileUploadProps) => {
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
-  const [manualInputs, setManualInputs] = useState<string[]>([""]);
+  const [manualInput, setManualInput] = useState("");
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     // Validate file types
@@ -121,14 +121,13 @@ export const FileUpload = ({
     }
   };
 
-  const handleManualAdd = (index: number) => {
-    const input = manualInputs[index];
-    if (!input.trim()) {
+  const handleManualAdd = () => {
+    if (!manualInput.trim()) {
       toast.error("Please enter a VIN or license plate");
       return;
     }
 
-    const cleanInput = input.trim().toUpperCase();
+    const cleanInput = manualInput.trim().toUpperCase();
     
     if (cleanInput.length === 17) {
       onAddManualVehicle(cleanInput);
@@ -141,26 +140,8 @@ export const FileUpload = ({
       return;
     }
 
-    // Clear the input and add a new empty one
-    const newInputs = [...manualInputs];
-    newInputs[index] = "";
-    if (index === manualInputs.length - 1) {
-      newInputs.push("");
-    }
-    setManualInputs(newInputs);
-  };
-
-  const updateManualInput = (index: number, value: string) => {
-    const newInputs = [...manualInputs];
-    newInputs[index] = value;
-    setManualInputs(newInputs);
-  };
-
-  const removeManualInput = (index: number) => {
-    if (manualInputs.length > 1) {
-      const newInputs = manualInputs.filter((_, i) => i !== index);
-      setManualInputs(newInputs);
-    }
+    // Clear the input after successful addition
+    setManualInput("");
   };
 
   // Get all manually entered VINs
@@ -295,32 +276,18 @@ export const FileUpload = ({
             </div>
           )}
 
-          {/* Manual input fields */}
-          <div className="space-y-2">
-            {manualInputs.map((input, index) => (
-              <div key={index} className="flex gap-2">
-                <Input
-                  placeholder="Enter VIN (17 chars) or License Plate (7 chars)"
-                  value={input}
-                  onChange={(e) => updateManualInput(index, e.target.value)}
-                  className="flex-1 rounded-md"
-                />
-                <Button onClick={() => handleManualAdd(index)} className="bg-purple-600 hover:bg-purple-700 rounded-md">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add
-                </Button>
-                {manualInputs.length > 1 && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => removeManualInput(index)}
-                    className="text-red-500 hover:text-red-700 rounded-md"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-            ))}
+          {/* Single manual input field */}
+          <div className="flex gap-2">
+            <Input
+              placeholder="Enter VIN (17 chars) or License Plate (7 chars)"
+              value={manualInput}
+              onChange={(e) => setManualInput(e.target.value)}
+              className="flex-1 rounded-md"
+            />
+            <Button onClick={handleManualAdd} className="bg-purple-600 hover:bg-purple-700 rounded-md">
+              <Plus className="h-4 w-4 mr-2" />
+              Add
+            </Button>
           </div>
           
           <p className="text-sm text-gray-600 mt-2">

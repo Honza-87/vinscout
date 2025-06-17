@@ -34,6 +34,9 @@ const Index = () => {
     if (uploadedFiles.length === 0) return;
     
     setIsExtracting(true);
+    
+    // Keep existing manual entries when adding new files
+    const existingManualEntry = extractedFiles.find(f => f.file.name === 'Manual Entry');
     const newExtractedFiles: ExtractedFile[] = uploadedFiles.map(file => ({
       file,
       status: 'processing' as const,
@@ -41,10 +44,15 @@ const Index = () => {
       extractedVins: []
     }));
     
+    // Add back the manual entry if it exists
+    if (existingManualEntry) {
+      newExtractedFiles.push(existingManualEntry);
+    }
+    
     setExtractedFiles(newExtractedFiles);
 
-    // Process each file
-    for (let i = 0; i < newExtractedFiles.length; i++) {
+    // Process each uploaded file (not the manual entry)
+    for (let i = 0; i < uploadedFiles.length; i++) {
       const extractedFile = newExtractedFiles[i];
       
       // Simulate extraction progress
@@ -130,14 +138,14 @@ const Index = () => {
   };
 
   const addManualVehicle = async (vin: string) => {
-    // Simulate CEBIA data collection for manual entry
-    const newExtracted = [...extractedFiles];
-    const manualFileIndex = newExtracted.findIndex(f => f.file.name === 'Manual Entry');
+    // Find or create manual entry file
+    const updatedFiles = [...extractedFiles];
+    const manualFileIndex = updatedFiles.findIndex(f => f.file.name === 'Manual Entry');
     
     if (manualFileIndex >= 0) {
-      newExtracted[manualFileIndex].extractedVins.push(vin);
+      updatedFiles[manualFileIndex].extractedVins.push(vin);
     } else {
-      newExtracted.push({
+      updatedFiles.push({
         file: new File([], 'Manual Entry'),
         status: 'success',
         progress: 100,
@@ -145,7 +153,7 @@ const Index = () => {
       });
     }
     
-    setExtractedFiles(newExtracted);
+    setExtractedFiles(updatedFiles);
   };
 
   const hasExtractedData = extractedFiles.some(f => f.extractedVins.length > 0);
