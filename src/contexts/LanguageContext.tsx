@@ -21,11 +21,14 @@ const translations = {
     
     // Insurance Form
     insuranceDetails: "Pojistné Údaje",
+    clientInformation: "Informace o klientovi",
+    insuranceContractDetails: "Detaily pojistné smlouvy",
+    insuranceCoverage: "Pojistné krytí",
+    participation: "Spoluúčast",
     insurerTin: "DIČ pojišťovny",
     email: "E-mail",
     phone: "Telefon",
     startOfInsurance: "Začátek pojištění",
-    participation: "Spoluúčast",
     fixed: "Pevná",
     percentage: "Procentní",
     min: "Min",
@@ -40,17 +43,23 @@ const translations = {
     vandalism: "Vandalismus",
     mandatoryInsuranceLimit: "Limit povinného ručení",
     recommendedStandard: "Doporučený standard",
+    accidentInsuranceParticipation: "Spoluúčast havarijního pojištění",
+    fixedAmount: "Pevná částka",
+    percentageAmount: "Procentní částka",
+    windowsInsuranceLimit: "Limit pojištění skel",
     
     // File Upload
     documentUpload: "Nahrání Dokumentů",
-    dropFiles: "Přetáhněte soubory sem nebo klikněte pro výběr",
-    supportedFormats: "Podporované formáty: PDF, XLS, XLSX, DOC, DOCX",
+    documentUploadAndExtraction: "Nahrání dokumentů a extrakce VIN",
+    dropFiles: "Přetáhněte dokumenty sem nebo klikněte pro výběr",
+    supportedFormats: "Podporuje PDF, Excel (.xls, .xlsx), Word (.doc, .docx)",
     uploadedFiles: "Nahrané soubory:",
     extractVins: "Extrahovat VIN",
     extracting: "Extrakce...",
     extractionResults: "Výsledky extrakce:",
     manualVehicleAddition: "Ruční přidání vozidla",
     enterVinOrPlate: "Zadejte VIN nebo SPZ",
+    manualEntries: "Ruční záznamy:",
     
     // Results Section
     vehicleResults: "Výsledky Vozidel",
@@ -94,7 +103,14 @@ const translations = {
     enterOwnerTin: "Zadejte DIČ vlastníka",
     enterOperatorTin: "Zadejte DIČ provozovatele",
     vinPlaceholder: "17-znakový VIN",
-    platePlaceholder: "XXX-XXXX"
+    platePlaceholder: "XXX-XXXX",
+    enterInsurerTin: "Zadejte DIČ pojišťovny",
+    enterEmail: "Zadejte e-mailovou adresu",
+    enterPhone: "Zadejte telefonní číslo",
+    
+    // Validation messages
+    vinsFound: "VIN nalezeno",
+    noVinsFound: "Žádné VIN nenalezeno"
   },
   en: {
     // Header
@@ -107,11 +123,14 @@ const translations = {
     
     // Insurance Form
     insuranceDetails: "Insurance Details",
+    clientInformation: "Client Information",
+    insuranceContractDetails: "Insurance Contract Details",
+    insuranceCoverage: "Insurance Coverage",
+    participation: "Participation",
     insurerTin: "Insurer TIN",
     email: "Email",
     phone: "Phone",
     startOfInsurance: "Start of Insurance",
-    participation: "Participation",
     fixed: "Fixed",
     percentage: "Percentage",
     min: "Min",
@@ -126,17 +145,23 @@ const translations = {
     vandalism: "Vandalism",
     mandatoryInsuranceLimit: "Mandatory Insurance Limit",
     recommendedStandard: "Recommended Standard",
+    accidentInsuranceParticipation: "Accident Insurance Participation",
+    fixedAmount: "Fixed Amount",
+    percentageAmount: "Percentage Amount",
+    windowsInsuranceLimit: "Windows Insurance Limit",
     
     // File Upload
     documentUpload: "Document Upload",
-    dropFiles: "Drop files here or click to select",
-    supportedFormats: "Supported formats: PDF, XLS, XLSX, DOC, DOCX",
-    uploadedFiles: "Uploaded files:",
+    documentUploadAndExtraction: "Document Upload & VIN Extraction",
+    dropFiles: "Drag & drop documents here, or click to select",
+    supportedFormats: "Supports PDF, Excel (.xls, .xlsx), Word (.doc, .docx)",
+    uploadedFiles: "Uploaded Files:",
     extractVins: "Extract VINs",
     extracting: "Extracting...",
     extractionResults: "Extraction Results:",
     manualVehicleAddition: "Manual Vehicle Addition",
     enterVinOrPlate: "Enter VIN or License Plate",
+    manualEntries: "Manual Entries:",
     
     // Results Section
     vehicleResults: "Vehicle Results",
@@ -180,7 +205,14 @@ const translations = {
     enterOwnerTin: "Enter owner TIN",
     enterOperatorTin: "Enter operator TIN",
     vinPlaceholder: "17-character VIN",
-    platePlaceholder: "XXX-XXXX"
+    platePlaceholder: "XXX-XXXX",
+    enterInsurerTin: "Enter insurer TIN",
+    enterEmail: "Enter email address",
+    enterPhone: "Enter phone number",
+    
+    // Validation messages
+    vinsFound: "VIN(s) found",
+    noVinsFound: "No VINs found"
   }
 };
 
