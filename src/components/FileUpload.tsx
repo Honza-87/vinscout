@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -53,8 +54,14 @@ export const FileUpload = ({
     }
   });
 
+  // Validate if input is a valid VIN or license plate
+  const isValidInput = (input: string) => {
+    const trimmed = input.trim();
+    return trimmed.length === 17 || trimmed.length === 7 || trimmed.length === 8;
+  };
+
   const handleAddManualVehicle = () => {
-    if (newVin.trim()) {
+    if (newVin.trim() && isValidInput(newVin)) {
       onAddManualVehicle(newVin.trim());
       setNewVin("");
     }
@@ -144,8 +151,8 @@ export const FileUpload = ({
               </div>
             )}
 
-            {/* Extraction Results - Only show when extract button was clicked */}
-            {hasExtracted && extractedFiles.length > 0 && (
+            {/* Extraction Results - Only show when extract button was clicked AND files were uploaded */}
+            {hasExtracted && uploadedFiles.length > 0 && extractedFiles.filter(f => f.file.name !== 'Manual Entry').length > 0 && (
               <div className="space-y-3">
                 <h4 className="font-medium text-gray-700">Extraction Results:</h4>
                 {extractedFiles.filter(f => f.file.name !== 'Manual Entry').map((extractedFile, fileIndex) => (
@@ -226,13 +233,17 @@ export const FileUpload = ({
                   placeholder="Enter VIN or License Plate"
                   value={newVin}
                   onChange={(e) => setNewVin(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleAddManualVehicle()}
+                  onKeyPress={(e) => e.key === 'Enter' && isValidInput(newVin) && handleAddManualVehicle()}
                   className="flex-1"
                 />
                 <Button 
                   onClick={handleAddManualVehicle}
-                  disabled={!newVin.trim()}
-                  className="bg-green-600 hover:bg-green-700"
+                  disabled={!newVin.trim() || !isValidInput(newVin)}
+                  className={`${
+                    isValidInput(newVin) && newVin.trim()
+                      ? 'bg-green-600 hover:bg-green-700' 
+                      : 'bg-green-300 cursor-not-allowed'
+                  }`}
                 >
                   <Plus className="h-4 w-4" />
                 </Button>

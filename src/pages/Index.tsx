@@ -131,31 +131,34 @@ const Index = () => {
     }
 
     // Create vehicles from all VINs
-    const newVehicles = allVins.map((vin, index) => ({
-      id: Date.now() + index,
-      vin,
-      licensePlate: "",
-      mileage: "",
-      vehicleValue: "",
-      mandatoryInsurance: false,
-      accidentInsurance: false,
-      injuryInsurance: false,
-      windowsInsurance: "10",
-      ownerSameAsInsurer: true,
-      operatorSameAsInsurer: true,
-      ownerTin: "",
-      operatorTin: "",
-      cebia: {
-        type: "Passenger Car",
-        manufacturer: "BMW",
-        model: "320d",
-        engineDisplacement: "1995 cm³",
-        enginePower: "140 kW",
-        maxWeight: "1850 kg",
-        year: "2020",
-        seats: "5"
-      }
-    }));
+    const newVehicles = allVins.map((vinOrPlate, index) => {
+      const isVin = vinOrPlate.length === 17;
+      return {
+        id: Date.now() + index,
+        vin: isVin ? vinOrPlate : "",
+        licensePlate: isVin ? "" : vinOrPlate,
+        mileage: "",
+        vehicleValue: "",
+        mandatoryInsurance: false,
+        accidentInsurance: false,
+        injuryInsurance: false,
+        windowsInsurance: "10",
+        ownerSameAsInsurer: true,
+        operatorSameAsInsurer: true,
+        ownerTin: "",
+        operatorTin: "",
+        cebia: {
+          type: "Passenger Car",
+          manufacturer: "BMW",
+          model: "320d",
+          engineDisplacement: "1995 cm³",
+          enginePower: "140 kW",
+          maxWeight: "1850 kg",
+          year: "2020",
+          seats: "5"
+        }
+      };
+    });
 
     setVehicles(newVehicles);
     setIsDecoding(false);
@@ -190,8 +193,7 @@ const Index = () => {
     } else if (trimmedVin.length === 7 || trimmedVin.length === 8) {
       // It's a license plate
     } else {
-      // Invalid entry
-      alert("Entered value is neither a VIN nor a Licence plate");
+      // Invalid entry - don't add it
       return;
     }
 
