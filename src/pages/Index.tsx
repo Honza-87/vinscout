@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { FileUpload } from "@/components/FileUpload";
 import { InsuranceForm } from "@/components/InsuranceForm";
@@ -140,7 +139,10 @@ const Index = () => {
       accidentInsurance: false,
       injuryInsurance: false,
       windowsInsurance: "10",
-      ownerTin: formData.ownerSameAsInsurer ? "" : "",
+      ownerSameAsInsurer: true,
+      operatorSameAsInsurer: true,
+      ownerTin: "",
+      operatorTin: "",
       cebia: {
         type: "Passenger Car",
         manufacturer: "BMW",
