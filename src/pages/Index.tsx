@@ -3,6 +3,8 @@ import { FileUpload } from "@/components/FileUpload";
 import { InsuranceForm } from "@/components/InsuranceForm";
 import { ResultsSection } from "@/components/ResultsSection";
 import { AdminPanel } from "@/components/AdminPanel";
+import { LanguageToggle } from "@/components/LanguageToggle";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -16,6 +18,8 @@ interface ExtractedFile {
 }
 
 const Index = () => {
+  const { t } = useLanguage();
+  
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [extractedFiles, setExtractedFiles] = useState<ExtractedFile[]>([]);
   const [hasExtracted, setHasExtracted] = useState(false);
@@ -244,21 +248,24 @@ const Index = () => {
               className="h-12 w-auto"
             />
           </div>
+          <div className="absolute right-0 top-0">
+            <LanguageToggle />
+          </div>
           <h1 className="text-4xl font-bold text-purple-800 mb-2">
-            VinScout Document Processor
+            {t('title')}
           </h1>
           <p className="text-lg text-gray-600">
-            Professional automotive document processing for VIN and license plate extraction
+            {t('subtitle')}
           </p>
         </header>
 
         <Tabs defaultValue="processing" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-6 rounded-lg">
             <TabsTrigger value="processing" className="text-lg rounded-md">
-              Document Processing
+              {t('documentProcessing')}
             </TabsTrigger>
             <TabsTrigger value="admin" className="text-lg rounded-md">
-              Admin Panel
+              {t('adminPanel')}
             </TabsTrigger>
           </TabsList>
 
@@ -293,7 +300,7 @@ const Index = () => {
                   disabled={isDecoding}
                   className="w-full bg-green-600 hover:bg-green-700 text-white py-6 text-lg rounded-lg"
                 >
-                  {isDecoding ? `Decoding... ${decodingProgress}%` : 'Decode'}
+                  {isDecoding ? `${t('decoding')} ${decodingProgress}%` : t('decode')}
                 </Button>
               </div>
             )}
@@ -317,7 +324,7 @@ const Index = () => {
               <div className="flex items-center justify-between">
                 <DialogTitle className="flex items-center gap-2">
                   <AlertTriangle className="h-5 w-5 text-yellow-600" />
-                  Unextracted Files
+                  {t('unextractedFiles')}
                 </DialogTitle>
                 <Button
                   variant="ghost"
@@ -329,7 +336,7 @@ const Index = () => {
                 </Button>
               </div>
               <DialogDescription>
-                There are files that haven't been extracted yet. What would you like to do?
+                {t('unextractedFilesDesc')}
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="flex gap-2">
@@ -337,7 +344,7 @@ const Index = () => {
                 onClick={handleProceedWithoutExtract}
                 className="flex-1 bg-green-600 hover:bg-green-700"
               >
-                Decode
+                {t('decode')}
               </Button>
               <Button
                 variant="outline"
@@ -345,7 +352,7 @@ const Index = () => {
                 className="flex-1 bg-orange-600 hover:bg-orange-700 text-white border-orange-600"
               >
                 <Zap className="h-4 w-4 mr-2" />
-                Extract
+                {t('extract')}
               </Button>
             </DialogFooter>
           </DialogContent>
