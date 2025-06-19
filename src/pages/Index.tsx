@@ -25,7 +25,7 @@ const Index = () => {
     phone: "",
     startOfInsurance: "",
     participation: "fixed",
-    fixedParticipation: "50mil",
+    fixedParticipation: "100mil", // Changed to recommended standard
     percentageParticipation: "min",
     mandatoryInsurance: true, // Set to true by default
     accidentInsurance: false,
@@ -182,18 +182,31 @@ const Index = () => {
   };
 
   const addManualVehicle = async (vin: string) => {
+    // Validate VIN or license plate
+    const trimmedVin = vin.trim();
+    
+    if (trimmedVin.length === 17) {
+      // It's a VIN
+    } else if (trimmedVin.length === 7 || trimmedVin.length === 8) {
+      // It's a license plate
+    } else {
+      // Invalid entry
+      alert("Entered value is neither a VIN nor a Licence plate");
+      return;
+    }
+
     // Find or create manual entry file
     const updatedFiles = [...extractedFiles];
     const manualFileIndex = updatedFiles.findIndex(f => f.file.name === 'Manual Entry');
     
     if (manualFileIndex >= 0) {
-      updatedFiles[manualFileIndex].extractedVins.push(vin);
+      updatedFiles[manualFileIndex].extractedVins.push(trimmedVin);
     } else {
       updatedFiles.push({
         file: new File([], 'Manual Entry'),
         status: 'success',
         progress: 100,
-        extractedVins: [vin]
+        extractedVins: [trimmedVin]
       });
     }
     

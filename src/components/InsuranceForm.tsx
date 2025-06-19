@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,8 +35,8 @@ export const InsuranceForm = ({ formData, onFormDataChange }: InsuranceFormProps
     });
   };
 
-  // Always show participation since mandatory insurance is checked by default
-  const showParticipation = true;
+  // Show participation when any insurance is checked
+  const showParticipation = formData.mandatoryInsurance || formData.accidentInsurance || formData.windowsInsurance !== "0" || formData.injuryInsurance || formData.animalCollisions || formData.luggage || formData.assistanceServices || formData.vandalism;
 
   return (
     <Card className="border-2 border-purple-200 shadow-lg rounded-lg">
@@ -180,125 +179,127 @@ export const InsuranceForm = ({ formData, onFormDataChange }: InsuranceFormProps
           </div>
 
           {/* Right Column - Participation */}
-          <div className="space-y-6">
-            <h3 className="font-semibold text-lg text-purple-800">Participation</h3>
-            
-            <div className="space-y-4">
-              {/* Mandatory Insurance participation - aligned with checkbox */}
-              {formData.mandatoryInsurance && (
-                <div>
-                  <Label>Mandatory Insurance Limit</Label>
-                  <Select
-                    value={formData.fixedParticipation}
-                    onValueChange={(value) => updateFormData('fixedParticipation', value)}
-                  >
-                    <SelectTrigger className="rounded-md">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-md bg-white z-50">
-                      <SelectItem value="50mil">50 mil. Kč / 50 mil. Kč – legal minimum</SelectItem>
-                      <SelectItem value="70mil">70 mil. Kč / 70 mil. Kč – lower standard</SelectItem>
-                      <SelectItem value="100mil">100 mil. Kč / 100 mil. Kč – recommended standard</SelectItem>
-                      <SelectItem value="250mil">250 mil. Kč / 250 mil. Kč – maximum protection</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-
-              {/* Accident Insurance participation */}
-              {formData.accidentInsurance && (
-                <div className="space-y-4">
+          {showParticipation && (
+            <div className="space-y-6">
+              <h3 className="font-semibold text-lg text-purple-800">Participation</h3>
+              
+              <div className="space-y-4">
+                {/* Mandatory Insurance participation - aligned with checkbox */}
+                {formData.mandatoryInsurance && (
                   <div>
-                    <Label className="mb-3 block">Accident Insurance Participation</Label>
-                    <RadioGroup
-                      value={formData.participation}
-                      onValueChange={(value) => updateFormData('participation', value)}
-                      className="space-y-3"
+                    <Label>Mandatory Insurance Limit</Label>
+                    <Select
+                      value={formData.fixedParticipation}
+                      onValueChange={(value) => updateFormData('fixedParticipation', value)}
                     >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="fixed" id="fixed" />
-                        <Label htmlFor="fixed">Fixed amount</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="percentage" id="percentage" />
-                        <Label htmlFor="percentage">Percentage amount</Label>
-                      </div>
-                    </RadioGroup>
+                      <SelectTrigger className="rounded-md">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-md bg-white z-50">
+                        <SelectItem value="50mil">50 mil. Kč / 50 mil. Kč – legal minimum</SelectItem>
+                        <SelectItem value="70mil">70 mil. Kč / 70 mil. Kč – lower standard</SelectItem>
+                        <SelectItem value="100mil">100 mil. Kč / 100 mil. Kč – recommended standard</SelectItem>
+                        <SelectItem value="250mil">250 mil. Kč / 250 mil. Kč – maximum protection</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
+                )}
 
-                  {formData.participation === "fixed" && (
+                {/* Accident Insurance participation */}
+                {formData.accidentInsurance && (
+                  <div className="space-y-4">
                     <div>
-                      <Label>Fixed Amount</Label>
-                      <Select
-                        value={formData.fixedParticipation}
-                        onValueChange={(value) => updateFormData('fixedParticipation', value)}
+                      <Label className="mb-3 block">Accident Insurance Participation</Label>
+                      <RadioGroup
+                        value={formData.participation}
+                        onValueChange={(value) => updateFormData('participation', value)}
+                        className="space-y-3"
                       >
-                        <SelectTrigger className="rounded-md">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-md bg-white z-50">
-                          <SelectItem value="0">0</SelectItem>
-                          <SelectItem value="100">100</SelectItem>
-                          <SelectItem value="200">200</SelectItem>
-                          <SelectItem value="300">300</SelectItem>
-                          <SelectItem value="500">500</SelectItem>
-                          <SelectItem value="1000">1000</SelectItem>
-                          <SelectItem value="max">Max</SelectItem>
-                        </SelectContent>
-                      </Select>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="fixed" id="fixed" />
+                          <Label htmlFor="fixed">Fixed amount</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="percentage" id="percentage" />
+                          <Label htmlFor="percentage">Percentage amount</Label>
+                        </div>
+                      </RadioGroup>
                     </div>
-                  )}
 
-                  {formData.participation === "percentage" && (
-                    <div>
-                      <Label>Percentage Amount</Label>
-                      <Select
-                        value={formData.percentageParticipation}
-                        onValueChange={(value) => updateFormData('percentageParticipation', value)}
-                      >
-                        <SelectTrigger className="rounded-md">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-md bg-white z-50">
-                          <SelectItem value="min">Min</SelectItem>
-                          <SelectItem value="1%">1%</SelectItem>
-                          <SelectItem value="2%">2%</SelectItem>
-                          <SelectItem value="3%">3%</SelectItem>
-                          <SelectItem value="5%">5%</SelectItem>
-                          <SelectItem value="10%">10%</SelectItem>
-                          <SelectItem value="15%">15%</SelectItem>
-                          <SelectItem value="20%">20%</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-                </div>
-              )}
+                    {formData.participation === "fixed" && (
+                      <div>
+                        <Label>Fixed Amount</Label>
+                        <Select
+                          value={formData.fixedParticipation}
+                          onValueChange={(value) => updateFormData('fixedParticipation', value)}
+                        >
+                          <SelectTrigger className="rounded-md">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="rounded-md bg-white z-50">
+                            <SelectItem value="0">0</SelectItem>
+                            <SelectItem value="100">100</SelectItem>
+                            <SelectItem value="200">200</SelectItem>
+                            <SelectItem value="300">300</SelectItem>
+                            <SelectItem value="500">500</SelectItem>
+                            <SelectItem value="1000">1000</SelectItem>
+                            <SelectItem value="max">Max</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
 
-              {/* Windows Insurance Limit */}
-              {formData.windowsInsurance !== "0" && (
-                <div>
-                  <Label>Windows Insurance Limit</Label>
-                  <Select
-                    value={formData.windowsInsurance}
-                    onValueChange={(value) => updateFormData('windowsInsurance', value)}
-                  >
-                    <SelectTrigger className="rounded-md">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-md bg-white z-50">
-                      <SelectItem value="10">10</SelectItem>
-                      <SelectItem value="20">20</SelectItem>
-                      <SelectItem value="30">30</SelectItem>
-                      <SelectItem value="50">50</SelectItem>
-                      <SelectItem value="100">100</SelectItem>
-                      <SelectItem value="no-limit">No Limit</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
+                    {formData.participation === "percentage" && (
+                      <div>
+                        <Label>Percentage Amount</Label>
+                        <Select
+                          value={formData.percentageParticipation}
+                          onValueChange={(value) => updateFormData('percentageParticipation', value)}
+                        >
+                          <SelectTrigger className="rounded-md">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="rounded-md bg-white z-50">
+                            <SelectItem value="min">Min</SelectItem>
+                            <SelectItem value="1%">1%</SelectItem>
+                            <SelectItem value="2%">2%</SelectItem>
+                            <SelectItem value="3%">3%</SelectItem>
+                            <SelectItem value="5%">5%</SelectItem>
+                            <SelectItem value="10%">10%</SelectItem>
+                            <SelectItem value="15%">15%</SelectItem>
+                            <SelectItem value="20%">20%</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Windows Insurance Limit */}
+                {formData.windowsInsurance !== "0" && (
+                  <div>
+                    <Label>Windows Insurance Limit</Label>
+                    <Select
+                      value={formData.windowsInsurance}
+                      onValueChange={(value) => updateFormData('windowsInsurance', value)}
+                    >
+                      <SelectTrigger className="rounded-md">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-md bg-white z-50">
+                        <SelectItem value="10">10</SelectItem>
+                        <SelectItem value="20">20</SelectItem>
+                        <SelectItem value="30">30</SelectItem>
+                        <SelectItem value="50">50</SelectItem>
+                        <SelectItem value="100">100</SelectItem>
+                        <SelectItem value="no-limit">No Limit</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </CardContent>
     </Card>
