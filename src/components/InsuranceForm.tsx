@@ -10,12 +10,20 @@ import { FileText } from "lucide-react";
 interface InsuranceFormProps {
   formData: {
     insurerTin: string;
-    ownerSameAsInsurer: boolean;
-    ownerTin: string;
+    email: string;
+    phone: string;
     startOfInsurance: string;
     participation: string;
     fixedParticipation: string;
     percentageParticipation: string;
+    mandatoryInsurance: boolean;
+    accidentInsurance: boolean;
+    injuryInsurance: boolean;
+    windowsInsurance: string;
+    animalCollisions: boolean;
+    luggage: boolean;
+    assistanceServices: boolean;
+    vandalism: boolean;
   };
   onFormDataChange: (data: any) => void;
 }
@@ -36,115 +44,216 @@ export const InsuranceForm = ({ formData, onFormDataChange }: InsuranceFormProps
           Insurance Details
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-6 space-y-6">
-        <div>
-          <Label htmlFor="insurerTin">Insurer TIN</Label>
-          <Input
-            id="insurerTin"
-            value={formData.insurerTin}
-            onChange={(e) => updateFormData('insurerTin', e.target.value)}
-            placeholder="Enter insurer TIN"
-            className="rounded-md"
-          />
-        </div>
+      <CardContent className="p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column - Client Information */}
+          <div className="space-y-6">
+            <h3 className="font-semibold text-lg text-purple-800">Client Information</h3>
+            
+            <div>
+              <Label htmlFor="insurerTin">Insurer TIN</Label>
+              <Input
+                id="insurerTin"
+                value={formData.insurerTin}
+                onChange={(e) => updateFormData('insurerTin', e.target.value)}
+                placeholder="Enter insurer TIN"
+                className="rounded-md"
+              />
+            </div>
 
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="ownerSameAsInsurer"
-            checked={formData.ownerSameAsInsurer}
-            onCheckedChange={(checked) => updateFormData('ownerSameAsInsurer', checked)}
-          />
-          <Label htmlFor="ownerSameAsInsurer">Owner same as insurer</Label>
-        </div>
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => updateFormData('email', e.target.value)}
+                placeholder="Enter email address"
+                className="rounded-md"
+              />
+            </div>
 
-        {!formData.ownerSameAsInsurer && (
-          <div>
-            <Label htmlFor="ownerTin">Owner TIN</Label>
-            <Input
-              id="ownerTin"
-              value={formData.ownerTin}
-              onChange={(e) => updateFormData('ownerTin', e.target.value)}
-              placeholder="Enter owner TIN"
-              className="rounded-md"
-            />
+            <div>
+              <Label htmlFor="phone">Phone</Label>
+              <Input
+                id="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => updateFormData('phone', e.target.value)}
+                placeholder="Enter phone number"
+                className="rounded-md"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="startOfInsurance">Start of Insurance</Label>
+              <Input
+                id="startOfInsurance"
+                type="date"
+                value={formData.startOfInsurance}
+                onChange={(e) => updateFormData('startOfInsurance', e.target.value)}
+                className="rounded-md"
+              />
+            </div>
           </div>
-        )}
 
-        <div>
-          <Label htmlFor="startOfInsurance">Start of Insurance</Label>
-          <Input
-            id="startOfInsurance"
-            type="date"
-            value={formData.startOfInsurance}
-            onChange={(e) => updateFormData('startOfInsurance', e.target.value)}
-            className="rounded-md"
-          />
-        </div>
+          {/* Middle Column - Participation */}
+          <div className="space-y-6">
+            <h3 className="font-semibold text-lg text-purple-800">Participation</h3>
+            
+            <div className="space-y-4">
+              <RadioGroup
+                value={formData.participation}
+                onValueChange={(value) => updateFormData('participation', value)}
+                className="space-y-3"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="fixed" id="fixed" />
+                  <Label htmlFor="fixed">Fixed amount</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="percentage" id="percentage" />
+                  <Label htmlFor="percentage">Percentage amount</Label>
+                </div>
+              </RadioGroup>
 
-        <div className="space-y-4">
-          <Label>Participation</Label>
-          <RadioGroup
-            value={formData.participation}
-            onValueChange={(value) => updateFormData('participation', value)}
-            className="flex gap-6"
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="fixed" id="fixed" />
-              <Label htmlFor="fixed">Fixed amount</Label>
+              {formData.participation === "fixed" && (
+                <div>
+                  <Label>Fixed Amount</Label>
+                  <Select
+                    value={formData.fixedParticipation}
+                    onValueChange={(value) => updateFormData('fixedParticipation', value)}
+                  >
+                    <SelectTrigger className="rounded-md">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-md">
+                      <SelectItem value="0">0</SelectItem>
+                      <SelectItem value="100">100</SelectItem>
+                      <SelectItem value="200">200</SelectItem>
+                      <SelectItem value="300">300</SelectItem>
+                      <SelectItem value="500">500</SelectItem>
+                      <SelectItem value="1000">1000</SelectItem>
+                      <SelectItem value="max">Max</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {formData.participation === "percentage" && (
+                <div>
+                  <Label>Percentage Amount</Label>
+                  <Select
+                    value={formData.percentageParticipation}
+                    onValueChange={(value) => updateFormData('percentageParticipation', value)}
+                  >
+                    <SelectTrigger className="rounded-md">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-md">
+                      <SelectItem value="min">Min</SelectItem>
+                      <SelectItem value="1%">1%</SelectItem>
+                      <SelectItem value="2%">2%</SelectItem>
+                      <SelectItem value="3%">3%</SelectItem>
+                      <SelectItem value="5%">5%</SelectItem>
+                      <SelectItem value="10%">10%</SelectItem>
+                      <SelectItem value="15%">15%</SelectItem>
+                      <SelectItem value="20%">20%</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="percentage" id="percentage" />
-              <Label htmlFor="percentage">Percentage amount</Label>
-            </div>
-          </RadioGroup>
+          </div>
 
-          <div className="flex gap-4">
-            {formData.participation === "fixed" && (
-              <div className="flex-1">
-                <Label>Fixed Amount</Label>
+          {/* Right Column - Insurance Coverage */}
+          <div className="space-y-6">
+            <h3 className="font-semibold text-lg text-purple-800">Insurance Coverage</h3>
+            
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="mandatoryInsurance"
+                  checked={formData.mandatoryInsurance}
+                  onCheckedChange={(checked) => updateFormData('mandatoryInsurance', checked)}
+                />
+                <Label htmlFor="mandatoryInsurance">Mandatory Insurance</Label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="accidentInsurance"
+                  checked={formData.accidentInsurance}
+                  onCheckedChange={(checked) => updateFormData('accidentInsurance', checked)}
+                />
+                <Label htmlFor="accidentInsurance">Accident Insurance</Label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="injuryInsurance"
+                  checked={formData.injuryInsurance}
+                  onCheckedChange={(checked) => updateFormData('injuryInsurance', checked)}
+                />
+                <Label htmlFor="injuryInsurance">Injury Insurance</Label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="animalCollisions"
+                  checked={formData.animalCollisions}
+                  onCheckedChange={(checked) => updateFormData('animalCollisions', checked)}
+                />
+                <Label htmlFor="animalCollisions">Animal Collisions</Label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="luggage"
+                  checked={formData.luggage}
+                  onCheckedChange={(checked) => updateFormData('luggage', checked)}
+                />
+                <Label htmlFor="luggage">Luggage</Label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="assistanceServices"
+                  checked={formData.assistanceServices}
+                  onCheckedChange={(checked) => updateFormData('assistanceServices', checked)}
+                />
+                <Label htmlFor="assistanceServices">Assistance Services</Label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="vandalism"
+                  checked={formData.vandalism}
+                  onCheckedChange={(checked) => updateFormData('vandalism', checked)}
+                />
+                <Label htmlFor="vandalism">Vandalism</Label>
+              </div>
+
+              <div>
+                <Label>Windows Insurance</Label>
                 <Select
-                  value={formData.fixedParticipation}
-                  onValueChange={(value) => updateFormData('fixedParticipation', value)}
+                  value={formData.windowsInsurance}
+                  onValueChange={(value) => updateFormData('windowsInsurance', value)}
                 >
                   <SelectTrigger className="rounded-md">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="rounded-md">
-                    <SelectItem value="0">0</SelectItem>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                    <SelectItem value="30">30</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
                     <SelectItem value="100">100</SelectItem>
-                    <SelectItem value="200">200</SelectItem>
-                    <SelectItem value="300">300</SelectItem>
-                    <SelectItem value="500">500</SelectItem>
-                    <SelectItem value="1000">1000</SelectItem>
-                    <SelectItem value="max">Max</SelectItem>
+                    <SelectItem value="no-limit">No Limit</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-            )}
-
-            {formData.participation === "percentage" && (
-              <div className="flex-1">
-                <Label>Percentage Amount</Label>
-                <Select
-                  value={formData.percentageParticipation}
-                  onValueChange={(value) => updateFormData('percentageParticipation', value)}
-                >
-                  <SelectTrigger className="rounded-md">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-md">
-                    <SelectItem value="min">Min</SelectItem>
-                    <SelectItem value="1%">1%</SelectItem>
-                    <SelectItem value="2%">2%</SelectItem>
-                    <SelectItem value="3%">3%</SelectItem>
-                    <SelectItem value="5%">5%</SelectItem>
-                    <SelectItem value="10%">10%</SelectItem>
-                    <SelectItem value="15%">15%</SelectItem>
-                    <SelectItem value="20%">20%</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+            </div>
           </div>
         </div>
       </CardContent>

@@ -159,150 +159,157 @@ export const FileUpload = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
-        <div
-          {...getRootProps()}
-          className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-            isDragActive
-              ? "border-purple-400 bg-purple-50"
-              : "border-gray-300 hover:border-purple-400 hover:bg-purple-50"
-          }`}
-        >
-          <input {...getInputProps()} />
-          <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-          {isDragActive ? (
-            <p className="text-purple-600 font-medium">Drop the files here...</p>
-          ) : (
-            <>
-              <p className="text-gray-600 mb-2">
-                Drag & drop files here, or{" "}
-                <span className="text-purple-600 font-medium">browse files</span>
-              </p>
-              <p className="text-sm text-gray-500">
-                Supports PDF, DOCX, XLSX (max 50MB)
-              </p>
-            </>
-          )}
-        </div>
-
-        {uploadedFiles.length > 0 && (
-          <div className="mt-6 space-y-3">
-            <div className="flex items-center justify-between">
-              <h4 className="font-medium text-gray-700">Uploaded Files:</h4>
-              <Button 
-                onClick={onExtract} 
-                className="bg-orange-600 hover:bg-orange-700 rounded-md"
-                disabled={isExtracting}
-              >
-                <Zap className="h-4 w-4 mr-2" />
-                {isExtracting ? "Extracting..." : "Extract"}
-              </Button>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Left Column - Document Upload */}
+          <div className="space-y-6">
+            <h3 className="font-semibold text-lg text-purple-800">Document Upload</h3>
+            
+            <div
+              {...getRootProps()}
+              className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+                isDragActive
+                  ? "border-purple-400 bg-purple-50"
+                  : "border-gray-300 hover:border-purple-400 hover:bg-purple-50"
+              }`}
+            >
+              <input {...getInputProps()} />
+              <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+              {isDragActive ? (
+                <p className="text-purple-600 font-medium">Drop the files here...</p>
+              ) : (
+                <>
+                  <p className="text-gray-600 mb-2">
+                    Drag & drop files here, or{" "}
+                    <span className="text-purple-600 font-medium">browse files</span>
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Supports PDF, DOCX, XLSX (max 50MB)
+                  </p>
+                </>
+              )}
             </div>
-            {uploadedFiles.map((file, index) => {
-              const extractedFile = extractedFiles.find(ef => ef.file.name === file.name);
-              return (
-                <div key={index} className={`p-3 rounded-lg border ${getFileBackgroundClass(file)}`}>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-3">
-                      <FileText className="h-5 w-5 text-purple-600" />
-                      <div>
-                        <p className="font-medium text-sm">{file.name}</p>
-                        <p className="text-xs text-gray-500">
-                          {formatFileSize(file.size)}
-                          {file.type === 'application/pdf' && ' • PDF'}
-                        </p>
+
+            {uploadedFiles.length > 0 && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium text-gray-700">Uploaded Files:</h4>
+                  <Button 
+                    onClick={onExtract} 
+                    className="bg-orange-600 hover:bg-orange-700 rounded-md"
+                    disabled={isExtracting}
+                  >
+                    <Zap className="h-4 w-4 mr-2" />
+                    {isExtracting ? "Extracting..." : "Extract"}
+                  </Button>
+                </div>
+                {uploadedFiles.map((file, index) => {
+                  const extractedFile = extractedFiles.find(ef => ef.file.name === file.name);
+                  return (
+                    <div key={index} className={`p-3 rounded-lg border ${getFileBackgroundClass(file)}`}>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-3">
+                          <FileText className="h-5 w-5 text-purple-600" />
+                          <div>
+                            <p className="font-medium text-sm">{file.name}</p>
+                            <p className="text-xs text-gray-500">
+                              {formatFileSize(file.size)}
+                              {file.type === 'application/pdf' && ' • PDF'}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          {uploadProgress[file.name] && uploadProgress[file.name] < 100 && (
+                            <div className="w-24">
+                              <Progress value={uploadProgress[file.name]} className="h-2 rounded-full" />
+                            </div>
+                          )}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeFile(index)}
+                            className="text-red-500 hover:text-red-700 rounded-md"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      {uploadProgress[file.name] && uploadProgress[file.name] < 100 && (
-                        <div className="w-24">
-                          <Progress value={uploadProgress[file.name]} className="h-2 rounded-full" />
+                      
+                      {extractedFile?.status === 'processing' && (
+                        <div className="mt-2">
+                          <Progress value={extractedFile.progress} className="h-2 rounded-full" />
+                          <p className="text-xs text-gray-500 mt-1">Extracting VINs...</p>
                         </div>
                       )}
+                      
+                      {extractedFile?.extractedVins && extractedFile.extractedVins.length > 0 && (
+                        <div className="mt-2 space-y-2">
+                          <p className="text-sm font-medium text-green-700">Extracted VINs:</p>
+                          {extractedFile.extractedVins.map((vin, vinIndex) => (
+                            <Input
+                              key={vinIndex}
+                              value={vin}
+                              onChange={(e) => onUpdateExtractedVin(index, vinIndex, e.target.value)}
+                              className="text-sm rounded-md"
+                              placeholder="VIN"
+                            />
+                          ))}
+                        </div>
+                      )}
+                      
+                      {extractedFile?.status === 'error' && (
+                        <p className="text-sm text-yellow-700 mt-2">No VINs found in this document</p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Right Column - Manual Vehicle Addition */}
+          <div className="space-y-6">
+            <h3 className="font-semibold text-lg text-purple-800">Manual Vehicle Addition</h3>
+            
+            {/* Show all manually entered VINs */}
+            {manualVins.length > 0 && (
+              <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-sm font-medium text-green-700 mb-2">Added Vehicles:</p>
+                <div className="space-y-2">
+                  {manualVins.map((vin, index) => (
+                    <div key={index} className="flex items-center justify-between bg-white p-2 rounded border">
+                      <span className="text-sm text-green-600 font-mono">{vin}</span>
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => removeFile(index)}
-                        className="text-red-500 hover:text-red-700 rounded-md"
+                        onClick={() => onRemoveManualVehicle(vin)}
+                        className="text-red-500 hover:text-red-700 h-6 w-6 p-0"
                       >
-                        <X className="h-4 w-4" />
+                        <Trash2 className="h-3 w-3" />
                       </Button>
                     </div>
-                  </div>
-                  
-                  {extractedFile?.status === 'processing' && (
-                    <div className="mt-2">
-                      <Progress value={extractedFile.progress} className="h-2 rounded-full" />
-                      <p className="text-xs text-gray-500 mt-1">Extracting VINs...</p>
-                    </div>
-                  )}
-                  
-                  {extractedFile?.extractedVins && extractedFile.extractedVins.length > 0 && (
-                    <div className="mt-2 space-y-2">
-                      <p className="text-sm font-medium text-green-700">Extracted VINs:</p>
-                      {extractedFile.extractedVins.map((vin, vinIndex) => (
-                        <Input
-                          key={vinIndex}
-                          value={vin}
-                          onChange={(e) => onUpdateExtractedVin(index, vinIndex, e.target.value)}
-                          className="text-sm rounded-md"
-                          placeholder="VIN"
-                        />
-                      ))}
-                    </div>
-                  )}
-                  
-                  {extractedFile?.status === 'error' && (
-                    <p className="text-sm text-yellow-700 mt-2">No VINs found in this document</p>
-                  )}
+                  ))}
                 </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Manual Vehicle Addition */}
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <h4 className="font-medium text-gray-700 mb-3">Add Vehicles Manually</h4>
-          
-          {/* Show all manually entered VINs */}
-          {manualVins.length > 0 && (
-            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-sm font-medium text-green-700 mb-2">Added Vehicles:</p>
-              <div className="space-y-2">
-                {manualVins.map((vin, index) => (
-                  <div key={index} className="flex items-center justify-between bg-white p-2 rounded border">
-                    <span className="text-sm text-green-600 font-mono">{vin}</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onRemoveManualVehicle(vin)}
-                      className="text-red-500 hover:text-red-700 h-6 w-6 p-0"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  </div>
-                ))}
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Single manual input field */}
-          <div className="flex gap-2">
-            <Input
-              placeholder="Enter VIN (17 chars) or License Plate (7 chars)"
-              value={manualInput}
-              onChange={(e) => setManualInput(e.target.value)}
-              className="flex-1 rounded-md"
-            />
-            <Button onClick={handleManualAdd} className="bg-purple-600 hover:bg-purple-700 rounded-md">
-              <Plus className="h-4 w-4 mr-2" />
-              Add
-            </Button>
+            {/* Single manual input field */}
+            <div className="space-y-2">
+              <Input
+                placeholder="Enter VIN (17 chars) or License Plate (7 chars)"
+                value={manualInput}
+                onChange={(e) => setManualInput(e.target.value)}
+                className="rounded-md"
+              />
+              <Button onClick={handleManualAdd} className="w-full bg-purple-600 hover:bg-purple-700 rounded-md">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Vehicle
+              </Button>
+            </div>
+            
+            <p className="text-sm text-gray-600">
+              Auto-detects VIN (17 characters) or License Plate (7 characters)
+            </p>
           </div>
-          
-          <p className="text-sm text-gray-600 mt-2">
-            Auto-detects VIN (17 characters) or License Plate (7 characters)
-          </p>
         </div>
       </CardContent>
     </Card>

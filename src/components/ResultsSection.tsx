@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Download, FileJson } from "lucide-react";
 import { toast } from "sonner";
 
@@ -109,69 +108,51 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
                           </div>
                         </div>
 
-                        {/* Insurance Options */}
+                        {/* Owner and Operator Information */}
                         <div className="space-y-3">
-                          <h4 className="font-medium text-sm">Insurance Coverage</h4>
-                          <div className="grid grid-cols-1 gap-2">
-                            <div className="flex items-center space-x-2">
-                              <Checkbox
-                                id={`mandatory-${vehicle.id}`}
-                                checked={vehicle.mandatoryInsurance}
-                                onCheckedChange={(checked) => updateVehicle(vehicle.id, 'mandatoryInsurance', checked)}
-                              />
-                              <Label htmlFor={`mandatory-${vehicle.id}`} className="text-sm">Mandatory Insurance</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Checkbox
-                                id={`accident-${vehicle.id}`}
-                                checked={vehicle.accidentInsurance}
-                                onCheckedChange={(checked) => updateVehicle(vehicle.id, 'accidentInsurance', checked)}
-                              />
-                              <Label htmlFor={`accident-${vehicle.id}`} className="text-sm">Accident Insurance</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Checkbox
-                                id={`injury-${vehicle.id}`}
-                                checked={vehicle.injuryInsurance}
-                                onCheckedChange={(checked) => updateVehicle(vehicle.id, 'injuryInsurance', checked)}
-                              />
-                              <Label htmlFor={`injury-${vehicle.id}`} className="text-sm">Injury Insurance</Label>
-                            </div>
+                          <h4 className="font-medium text-sm">Owner & Operator Information</h4>
+                          
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`ownerSameAsInsurer-${vehicle.id}`}
+                              checked={vehicle.ownerSameAsInsurer !== false}
+                              onCheckedChange={(checked) => updateVehicle(vehicle.id, 'ownerSameAsInsurer', checked)}
+                            />
+                            <Label htmlFor={`ownerSameAsInsurer-${vehicle.id}`} className="text-sm">Owner same as insurer</Label>
                           </div>
 
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {vehicle.ownerSameAsInsurer === false && (
                             <div>
-                              <Label className="text-sm">Windows Insurance</Label>
-                              <Select
-                                value={vehicle.windowsInsurance}
-                                onValueChange={(value) => updateVehicle(vehicle.id, 'windowsInsurance', value)}
-                              >
-                                <SelectTrigger className="rounded-md h-9">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-md">
-                                  <SelectItem value="10">10</SelectItem>
-                                  <SelectItem value="20">20</SelectItem>
-                                  <SelectItem value="30">30</SelectItem>
-                                  <SelectItem value="50">50</SelectItem>
-                                  <SelectItem value="100">100</SelectItem>
-                                  <SelectItem value="no-limit">No Limit</SelectItem>
-                                </SelectContent>
-                              </Select>
+                              <Label className="text-sm">Owner TIN</Label>
+                              <Input
+                                value={vehicle.ownerTin || ""}
+                                onChange={(e) => updateVehicle(vehicle.id, 'ownerTin', e.target.value)}
+                                placeholder="Enter owner TIN"
+                                className="rounded-md h-9"
+                              />
                             </div>
+                          )}
 
-                            {!formData.ownerSameAsInsurer && (
-                              <div>
-                                <Label className="text-sm">Owner TIN</Label>
-                                <Input
-                                  value={vehicle.ownerTin}
-                                  onChange={(e) => updateVehicle(vehicle.id, 'ownerTin', e.target.value)}
-                                  placeholder="Enter owner TIN"
-                                  className="rounded-md h-9"
-                                />
-                              </div>
-                            )}
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`operatorSameAsInsurer-${vehicle.id}`}
+                              checked={vehicle.operatorSameAsInsurer !== false}
+                              onCheckedChange={(checked) => updateVehicle(vehicle.id, 'operatorSameAsInsurer', checked)}
+                            />
+                            <Label htmlFor={`operatorSameAsInsurer-${vehicle.id}`} className="text-sm">Operator same as insurer</Label>
                           </div>
+
+                          {vehicle.operatorSameAsInsurer === false && (
+                            <div>
+                              <Label className="text-sm">Operator TIN</Label>
+                              <Input
+                                value={vehicle.operatorTin || ""}
+                                onChange={(e) => updateVehicle(vehicle.id, 'operatorTin', e.target.value)}
+                                placeholder="Enter operator TIN"
+                                className="rounded-md h-9"
+                              />
+                            </div>
+                          )}
                         </div>
                       </div>
 

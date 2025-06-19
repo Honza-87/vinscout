@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { FileUpload } from "@/components/FileUpload";
 import { InsuranceForm } from "@/components/InsuranceForm";
@@ -20,12 +21,20 @@ const Index = () => {
   const [extractedFiles, setExtractedFiles] = useState<ExtractedFile[]>([]);
   const [formData, setFormData] = useState({
     insurerTin: "",
-    ownerSameAsInsurer: true,
-    ownerTin: "",
+    email: "",
+    phone: "",
     startOfInsurance: "",
     participation: "fixed",
     fixedParticipation: "0",
-    percentageParticipation: "min"
+    percentageParticipation: "min",
+    mandatoryInsurance: false,
+    accidentInsurance: false,
+    injuryInsurance: false,
+    windowsInsurance: "10",
+    animalCollisions: false,
+    luggage: false,
+    assistanceServices: false,
+    vandalism: false
   });
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [isExtracting, setIsExtracting] = useState(false);
@@ -235,26 +244,26 @@ const Index = () => {
           </TabsList>
 
           <TabsContent value="processing">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-              <div className="space-y-6 flex flex-col">
-                <FileUpload 
-                  uploadedFiles={uploadedFiles}
-                  onFilesUploaded={setUploadedFiles}
-                  extractedFiles={extractedFiles}
-                  onExtract={handleExtract}
-                  isExtracting={isExtracting}
-                  onUpdateExtractedVin={updateExtractedVin}
-                  onAddManualVehicle={addManualVehicle}
-                  onRemoveManualVehicle={removeManualVehicle}
-                />
-              </div>
-              
-              <div className="space-y-6 flex flex-col">
-                <InsuranceForm 
-                  formData={formData}
-                  onFormDataChange={setFormData}
-                />
-              </div>
+            {/* Insurance Details - Full Width */}
+            <div className="mb-8">
+              <InsuranceForm 
+                formData={formData}
+                onFormDataChange={setFormData}
+              />
+            </div>
+
+            {/* Document Upload & VIN Extraction - Full Width with Two Columns */}
+            <div className="mb-8">
+              <FileUpload 
+                uploadedFiles={uploadedFiles}
+                onFilesUploaded={setUploadedFiles}
+                extractedFiles={extractedFiles}
+                onExtract={handleExtract}
+                isExtracting={isExtracting}
+                onUpdateExtractedVin={updateExtractedVin}
+                onAddManualVehicle={addManualVehicle}
+                onRemoveManualVehicle={removeManualVehicle}
+              />
             </div>
 
             {hasExtractedData && (
