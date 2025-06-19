@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,6 +22,7 @@ interface FileUploadProps {
   onUpdateExtractedVin: (fileIndex: number, vinIndex: number, newVin: string) => void;
   onAddManualVehicle: (vin: string) => void;
   onRemoveManualVehicle: (vin: string) => void;
+  hasExtracted: boolean;
 }
 
 export const FileUpload = ({
@@ -33,7 +33,8 @@ export const FileUpload = ({
   isExtracting,
   onUpdateExtractedVin,
   onAddManualVehicle,
-  onRemoveManualVehicle
+  onRemoveManualVehicle,
+  hasExtracted
 }: FileUploadProps) => {
   const [newVin, setNewVin] = useState("");
   const [editingVin, setEditingVin] = useState<{fileIndex: number, vinIndex: number} | null>(null);
@@ -143,8 +144,8 @@ export const FileUpload = ({
               </div>
             )}
 
-            {/* Extraction Results */}
-            {extractedFiles.length > 0 && (
+            {/* Extraction Results - Only show when extract button was clicked */}
+            {hasExtracted && extractedFiles.length > 0 && (
               <div className="space-y-3">
                 <h4 className="font-medium text-gray-700">Extraction Results:</h4>
                 {extractedFiles.filter(f => f.file.name !== 'Manual Entry').map((extractedFile, fileIndex) => (

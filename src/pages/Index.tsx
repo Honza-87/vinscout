@@ -18,18 +18,19 @@ interface ExtractedFile {
 const Index = () => {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [extractedFiles, setExtractedFiles] = useState<ExtractedFile[]>([]);
+  const [hasExtracted, setHasExtracted] = useState(false);
   const [formData, setFormData] = useState({
     insurerTin: "",
     email: "",
     phone: "",
     startOfInsurance: "",
     participation: "fixed",
-    fixedParticipation: "0",
+    fixedParticipation: "50mil",
     percentageParticipation: "min",
-    mandatoryInsurance: false,
+    mandatoryInsurance: true, // Set to true by default
     accidentInsurance: false,
     injuryInsurance: false,
-    windowsInsurance: "10",
+    windowsInsurance: "0",
     animalCollisions: false,
     luggage: false,
     assistanceServices: false,
@@ -45,6 +46,7 @@ const Index = () => {
     if (uploadedFiles.length === 0) return;
     
     setIsExtracting(true);
+    setHasExtracted(true); // Set extraction flag
     
     // Keep existing manual entries when adding new files
     const existingManualEntry = extractedFiles.find(f => f.file.name === 'Manual Entry');
@@ -265,6 +267,7 @@ const Index = () => {
                 onUpdateExtractedVin={updateExtractedVin}
                 onAddManualVehicle={addManualVehicle}
                 onRemoveManualVehicle={removeManualVehicle}
+                hasExtracted={hasExtracted}
               />
             </div>
 
