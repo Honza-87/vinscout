@@ -8,6 +8,16 @@ import { Download, Settings } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
 
+type LogLevel = "INFO" | "WARN" | "SUCCESS" | "ERROR";
+
+interface LogEntry {
+  id: number;
+  timestamp: string;
+  level: LogLevel;
+  message: string;
+  details?: any;
+}
+
 export const AdminPanel = () => {
   const { t } = useLanguage();
   const [settings, setSettings] = useState({
@@ -16,25 +26,25 @@ export const AdminPanel = () => {
     tessDataPath: "/usr/share/tessdata"
   });
 
-  const [logs] = useState([
+  const [logs] = useState<LogEntry[]>([
     {
       id: 1,
       timestamp: new Date().toISOString(),
-      level: "INFO" as const,
+      level: "INFO",
       message: "Document processing started",
       details: { fileName: "sample.pdf", pages: 3 }
     },
     {
       id: 2,
       timestamp: new Date().toISOString(),
-      level: "WARN" as const,
+      level: "WARN",
       message: "OCR confidence below threshold",
       details: { confidence: 2.1, threshold: 2.5 }
     },
     {
       id: 3,
       timestamp: new Date().toISOString(),
-      level: "SUCCESS" as const,
+      level: "SUCCESS",
       message: "VIN extracted successfully",
       details: { vin: "1HGBH41JXMN109186", confidence: 0.95 }
     }
@@ -61,7 +71,7 @@ export const AdminPanel = () => {
     link.download = `fleeto-logs-${new Date().toISOString().split('T')[0]}.json`;
     link.click();
     URL.revokeObjectURL(url);
-    toast.success("Logs downloaded successfully");
+    toast.success(t('downloadLogsSuccess'));
   };
 
   return (

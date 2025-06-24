@@ -382,6 +382,13 @@ export type Database = {
         Args: { p_username: string; p_email: string; p_password: string }
         Returns: Json
       }
+      get_admin_claims_overview: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          total_claims: number
+          recent_claims: Json
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

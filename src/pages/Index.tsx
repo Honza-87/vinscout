@@ -24,7 +24,7 @@ const Index = () => {
   const [extractedFiles, setExtractedFiles] = useState<ExtractedFile[]>([]);
   const [hasExtracted, setHasExtracted] = useState(false);
   const [formData, setFormData] = useState({
-    insurerTin: "",
+    policyholderIco: "",
     email: "",
     phone: "",
     startOfInsurance: "",
