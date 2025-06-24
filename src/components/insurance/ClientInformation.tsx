@@ -5,7 +5,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ClientInformationProps {
   formData: {
-    insurerTin: string;
+    policyholderIco: string;
     email: string;
     phone: string;
     startOfInsurance: string;
@@ -21,12 +21,12 @@ export const ClientInformation = ({ formData, onFormDataChange }: ClientInformat
       <h3 className="font-semibold text-lg text-purple-800">{t('clientInformation')}</h3>
       
       <div>
-        <Label htmlFor="insurerTin">{t('insurerTin')}</Label>
+        <Label htmlFor="policyholderIco">{t('policyholderIco')}</Label>
         <Input
-          id="insurerTin"
-          value={formData.insurerTin}
-          onChange={(e) => onFormDataChange('insurerTin', e.target.value)}
-          placeholder={t('enterInsurerTin')}
+          id="policyholderIco"
+          value={formData.policyholderIco}
+          onChange={(e) => onFormDataChange('policyholderIco', e.target.value)}
+          placeholder={t('enterPolicyholderIco')}
           className="rounded-md"
         />
       </div>

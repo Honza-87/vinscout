@@ -19,13 +19,30 @@ const translations = {
     documentProcessing: "Zpracování Dokumentů",
     adminPanel: "Administrátorský Panel",
     
+    // Admin Panel
+    systemSettings: "Nastavení Systému",
+    ocrConfidenceThreshold: "Práh spolehlivosti OCR",
+    ocrConfidenceDesc: "Minimální úroveň spolehlivosti pro výsledky OCR (0-10)",
+    maxFileSize: "Max. velikost souboru (MB)",
+    maxFileSizeDesc: "Maximální povolená velikost souboru pro nahrání",
+    tesseractDataPath: "Cesta k datům Tesseract",
+    tesseractDataDesc: "Cesta k souborům jazykových dat Tesseract OCR",
+    saveSettings: "Uložit nastavení",
+    systemLogs: "Systémové logy",
+    downloadLogs: "Stáhnout logy",
+    viewDetails: "Zobrazit podrobnosti",
+    INFO: "INFO",
+    WARN: "VAROVÁNÍ",
+    SUCCESS: "ÚSPĚCH",
+    ERROR: "CHYBA",
+    
     // Insurance Form
     insuranceDetails: "Pojistné Údaje",
-    clientInformation: "Informace o klientovi",
+    clientInformation: "Informace o pojistníkovi",
     insuranceContractDetails: "Detaily pojistné smlouvy",
     insuranceCoverage: "Pojistné krytí",
     participation: "Spoluúčast",
-    insurerTin: "DIČ pojišťovny",
+    policyholderIco: "IČO pojistníka",
     email: "E-mail",
     phone: "Telefon",
     startOfInsurance: "Začátek pojištění",
@@ -48,6 +65,12 @@ const translations = {
     percentageAmount: "Procentní částka",
     windowsInsuranceLimit: "Limit pojištění skel",
     
+    // Mandatory insurance limits
+    limit50mil: "50 mil. Kč / 50 mil. Kč – zákonné minimum",
+    limit70mil: "70 mil. Kč / 70 mil. Kč – nižší standard",
+    limit100mil: "100 mil. Kč / 100 mil. Kč – doporučený standard",
+    limit250mil: "250 mil. Kč / 250 mil. Kč – maximální ochrana",
+    
     // File Upload
     documentUpload: "Nahrání Dokumentů",
     documentUploadAndExtraction: "Nahrání dokumentů a extrakce VIN",
@@ -69,8 +92,8 @@ const translations = {
     mileage: "Nájezd",
     vehicleValue: "Hodnota vozidla",
     ownerOperatorInfo: "Informace o vlastníkovi a provozovateli",
-    ownerSameAsInsurer: "Vlastník shodný s pojistníkem",
-    operatorSameAsInsurer: "Provozovatel shodný s pojistníkem",
+    ownerSameAsPolicyholder: "Vlastník shodný s pojistníkem",
+    operatorSameAsPolicyholder: "Provozovatel shodný s pojistníkem",
     vehicleData: "Údaje o vozidle",
     type: "Typ",
     manufacturer: "Výrobce",
@@ -82,6 +105,8 @@ const translations = {
     seats: "Sedadla",
     exportJson: "Exportovat JSON",
     downloadForm: "Stáhnout formulář",
+    changeIndividualCoverage: "Změnit individuální pojistné krytí",
+    keepSameCoverage: "Zachovat pojistné krytí stejné jako zbytek flotily",
     
     // Buttons
     decode: "Dekódovat",
@@ -100,11 +125,11 @@ const translations = {
     // Placeholders
     enterMileage: "Zadejte nájezd",
     enterVehicleValue: "Zadejte hodnotu vozidla",
-    enterOwnerTin: "Zadejte DIČ vlastníka",
-    enterOperatorTin: "Zadejte DIČ provozovatele",
+    enterOwnerIco: "Zadejte IČO vlastníka",
+    enterOperatorIco: "Zadejte IČO provozovatele",
     vinPlaceholder: "17-znakový VIN",
     platePlaceholder: "XXX-XXXX",
-    enterInsurerTin: "Zadejte DIČ pojišťovny",
+    enterPolicyholderIco: "Zadejte IČO pojistníka",
     enterEmail: "Zadejte e-mailovou adresu",
     enterPhone: "Zadejte telefonní číslo",
     
@@ -121,13 +146,30 @@ const translations = {
     documentProcessing: "Document Processing",
     adminPanel: "Admin Panel",
     
+    // Admin Panel
+    systemSettings: "System Settings",
+    ocrConfidenceThreshold: "OCR Confidence Threshold",
+    ocrConfidenceDesc: "Minimum confidence level for OCR results (0-10)",
+    maxFileSize: "Max File Size (MB)",
+    maxFileSizeDesc: "Maximum allowed file size for uploads",
+    tesseractDataPath: "Tesseract Data Path",
+    tesseractDataDesc: "Path to Tesseract OCR language data files",
+    saveSettings: "Save Settings",
+    systemLogs: "System Logs",
+    downloadLogs: "Download Logs",
+    viewDetails: "View Details",
+    INFO: "INFO",
+    WARN: "WARN",
+    SUCCESS: "SUCCESS",
+    ERROR: "ERROR",
+    
     // Insurance Form
     insuranceDetails: "Insurance Details",
-    clientInformation: "Client Information",
+    clientInformation: "Policyholder Information",
     insuranceContractDetails: "Insurance Contract Details",
     insuranceCoverage: "Insurance Coverage",
     participation: "Participation",
-    insurerTin: "Insurer TIN",
+    policyholderIco: "Policyholder ICO",
     email: "Email",
     phone: "Phone",
     startOfInsurance: "Start of Insurance",
@@ -150,6 +192,12 @@ const translations = {
     percentageAmount: "Percentage Amount",
     windowsInsuranceLimit: "Windows Insurance Limit",
     
+    // Mandatory insurance limits
+    limit50mil: "50 mil. CZK / 50 mil. CZK – legal minimum",
+    limit70mil: "70 mil. CZK / 70 mil. CZK – lower standard",
+    limit100mil: "100 mil. CZK / 100 mil. CZK – recommended standard",
+    limit250mil: "250 mil. CZK / 250 mil. CZK – maximum protection",
+    
     // File Upload
     documentUpload: "Document Upload",
     documentUploadAndExtraction: "Document Upload & VIN Extraction",
@@ -171,8 +219,8 @@ const translations = {
     mileage: "Mileage",
     vehicleValue: "Vehicle Value",
     ownerOperatorInfo: "Owner & Operator Information",
-    ownerSameAsInsurer: "Owner same as insurer",
-    operatorSameAsInsurer: "Operator same as insurer",
+    ownerSameAsPolicyholder: "Owner same as policyholder",
+    operatorSameAsPolicyholder: "Operator same as policyholder",
     vehicleData: "Vehicle Data",
     type: "Type",
     manufacturer: "Manufacturer",
@@ -184,6 +232,8 @@ const translations = {
     seats: "Seats",
     exportJson: "Export JSON",
     downloadForm: "Download Form",
+    changeIndividualCoverage: "Change individual insurance coverage",
+    keepSameCoverage: "Keep insurance coverage same as the rest of the fleet",
     
     // Buttons
     decode: "Decode",
@@ -202,11 +252,11 @@ const translations = {
     // Placeholders
     enterMileage: "Enter mileage",
     enterVehicleValue: "Enter vehicle value",
-    enterOwnerTin: "Enter owner TIN",
-    enterOperatorTin: "Enter operator TIN",
+    enterOwnerIco: "Enter owner ICO",
+    enterOperatorIco: "Enter operator ICO",
     vinPlaceholder: "17-character VIN",
     platePlaceholder: "XXX-XXXX",
-    enterInsurerTin: "Enter insurer TIN",
+    enterPolicyholderIco: "Enter policyholder ICO",
     enterEmail: "Enter email address",
     enterPhone: "Enter phone number",
     

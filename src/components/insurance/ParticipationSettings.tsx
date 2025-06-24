@@ -39,10 +39,10 @@ export const ParticipationSettings = ({ formData, onFormDataChange, showParticip
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="rounded-md bg-white z-50">
-                <SelectItem value="50mil">50 mil. Kč / 50 mil. Kč – legal minimum</SelectItem>
-                <SelectItem value="70mil">70 mil. Kč / 70 mil. Kč – lower standard</SelectItem>
-                <SelectItem value="100mil">100 mil. Kč / 100 mil. Kč – {t('recommendedStandard')}</SelectItem>
-                <SelectItem value="250mil">250 mil. Kč / 250 mil. Kč – maximum protection</SelectItem>
+                <SelectItem value="50mil">{t('limit50mil')}</SelectItem>
+                <SelectItem value="70mil">{t('limit70mil')}</SelectItem>
+                <SelectItem value="100mil">{t('limit100mil')}</SelectItem>
+                <SelectItem value="250mil">{t('limit250mil')}</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Download, FileJson } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { VehicleInsuranceCoverage } from "./vehicle/VehicleInsuranceCoverage";
 
 interface ResultsSectionProps {
   vehicles: any[];
@@ -20,6 +22,52 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
     const updatedVehicles = vehicles.map(vehicle =>
       vehicle.id === id ? { ...vehicle, [field]: value } : vehicle
     );
+    onVehiclesChange(updatedVehicles);
+  };
+
+  const toggleIndividualCoverage = (vehicleId: number) => {
+    const updatedVehicles = vehicles.map(vehicle => {
+      if (vehicle.id === vehicleId) {
+        const hasIndividualCoverage = !vehicle.hasIndividualCoverage;
+        const updatedVehicle = { ...vehicle, hasIndividualCoverage };
+        
+        // If enabling individual coverage, copy global settings
+        if (hasIndividualCoverage) {
+          updatedVehicle.individualInsurance = {
+            mandatoryInsurance: formData.mandatoryInsurance,
+            accidentInsurance: formData.accidentInsurance,
+            injuryInsurance: formData.injuryInsurance,
+            windowsInsurance: formData.windowsInsurance,
+            animalCollisions: formData.animalCollisions,
+            luggage: formData.luggage,
+            assistanceServices: formData.assistanceServices,
+            vandalism: formData.vandalism,
+            participation: formData.participation,
+            fixedParticipation: formData.fixedParticipation,
+            percentageParticipation: formData.percentageParticipation,
+          };
+        }
+        
+        return updatedVehicle;
+      }
+      return vehicle;
+    });
+    onVehiclesChange(updatedVehicles);
+  };
+
+  const updateVehicleInsurance = (vehicleId: number, field: string, value: any) => {
+    const updatedVehicles = vehicles.map(vehicle => {
+      if (vehicle.id === vehicleId) {
+        return {
+          ...vehicle,
+          individualInsurance: {
+            ...vehicle.individualInsurance,
+            [field]: value
+          }
+        };
+      }
+      return vehicle;
+    });
     onVehiclesChange(updatedVehicles);
   };
 
@@ -41,7 +89,6 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
   };
 
   const downloadForm = () => {
-    // Mock Excel export - in real implementation would use a library like SheetJS
     toast.success("Excel form download would be implemented here");
   };
 
@@ -117,18 +164,18 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
                           <div className="grid grid-cols-2 gap-3 items-center">
                             <div className="flex items-center space-x-2">
                               <Checkbox
-                                id={`ownerSameAsInsurer-${vehicle.id}`}
-                                checked={vehicle.ownerSameAsInsurer !== false}
-                                onCheckedChange={(checked) => updateVehicle(vehicle.id, 'ownerSameAsInsurer', checked)}
+                                id={`ownerSameAsPolicyholder-${vehicle.id}`}
+                                checked={vehicle.ownerSameAsPolicyholder !== false}
+                                onCheckedChange={(checked) => updateVehicle(vehicle.id, 'ownerSameAsPolicyholder', checked)}
                               />
-                              <Label htmlFor={`ownerSameAsInsurer-${vehicle.id}`} className="text-sm">{t('ownerSameAsInsurer')}</Label>
+                              <Label htmlFor={`ownerSameAsPolicyholder-${vehicle.id}`} className="text-sm">{t('ownerSameAsPolicyholder')}</Label>
                             </div>
-                            {vehicle.ownerSameAsInsurer === false && (
+                            {vehicle.ownerSameAsPolicyholder === false && (
                               <div>
                                 <Input
-                                  value={vehicle.ownerTin || ""}
-                                  onChange={(e) => updateVehicle(vehicle.id, 'ownerTin', e.target.value)}
-                                  placeholder={t('enterOwnerTin')}
+                                  value={vehicle.ownerIco || ""}
+                                  onChange={(e) => updateVehicle(vehicle.id, 'ownerIco', e.target.value)}
+                                  placeholder={t('enterOwnerIco')}
                                   className="rounded-md h-9"
                                 />
                               </div>
@@ -138,24 +185,34 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
                           <div className="grid grid-cols-2 gap-3 items-center">
                             <div className="flex items-center space-x-2">
                               <Checkbox
-                                id={`operatorSameAsInsurer-${vehicle.id}`}
-                                checked={vehicle.operatorSameAsInsurer !== false}
-                                onCheckedChange={(checked) => updateVehicle(vehicle.id, 'operatorSameAsInsurer', checked)}
+                                id={`operatorSameAsPolicyholder-${vehicle.id}`}
+                                checked={vehicle.operatorSameAsPolicyholder !== false}
+                                onCheckedChange={(checked) => updateVehicle(vehicle.id, 'operatorSameAsPolicyholder', checked)}
                               />
-                              <Label htmlFor={`operatorSameAsInsurer-${vehicle.id}`} className="text-sm">{t('operatorSameAsInsurer')}</Label>
+                              <Label htmlFor={`operatorSameAsPolicyholder-${vehicle.id}`} className="text-sm">{t('operatorSameAsPolicyholder')}</Label>
                             </div>
-                            {vehicle.operatorSameAsInsurer === false && (
+                            {vehicle.operatorSameAsPolicyholder === false && (
                               <div>
                                 <Input
-                                  value={vehicle.operatorTin || ""}
-                                  onChange={(e) => updateVehicle(vehicle.id, 'operatorTin', e.target.value)}
-                                  placeholder={t('enterOperatorTin')}
+                                  value={vehicle.operatorIco || ""}
+                                  onChange={(e) => updateVehicle(vehicle.id, 'operatorIco', e.target.value)}
+                                  placeholder={t('enterOperatorIco')}
                                   className="rounded-md h-9"
                                 />
                               </div>
                             )}
                           </div>
                         </div>
+
+                        {/* Individual Insurance Coverage */}
+                        <VehicleInsuranceCoverage
+                          vehicleId={vehicle.id}
+                          hasIndividualCoverage={vehicle.hasIndividualCoverage || false}
+                          insuranceData={vehicle.individualInsurance || formData}
+                          globalInsuranceData={formData}
+                          onToggleIndividualCoverage={toggleIndividualCoverage}
+                          onUpdateInsurance={updateVehicleInsurance}
+                        />
                       </div>
 
                       {/* Right side - Vehicle Data */}

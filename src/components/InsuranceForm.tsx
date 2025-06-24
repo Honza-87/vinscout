@@ -8,7 +8,7 @@ import { ParticipationSettings } from "./insurance/ParticipationSettings";
 
 interface InsuranceFormProps {
   formData: {
-    insurerTin: string;
+    policyholderIco: string;
     email: string;
     phone: string;
     startOfInsurance: string;

@@ -4,11 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Download, Settings } from "lucide-react";
 import { toast } from "sonner";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export const AdminPanel = () => {
+  const { t } = useLanguage();
   const [settings, setSettings] = useState({
     confidenceThreshold: "2.5",
     maxFileSize: "50",
@@ -19,21 +20,21 @@ export const AdminPanel = () => {
     {
       id: 1,
       timestamp: new Date().toISOString(),
-      level: "INFO",
+      level: "INFO" as const,
       message: "Document processing started",
       details: { fileName: "sample.pdf", pages: 3 }
     },
     {
       id: 2,
       timestamp: new Date().toISOString(),
-      level: "WARN",
+      level: "WARN" as const,
       message: "OCR confidence below threshold",
       details: { confidence: 2.1, threshold: 2.5 }
     },
     {
       id: 3,
       timestamp: new Date().toISOString(),
-      level: "SUCCESS",
+      level: "SUCCESS" as const,
       message: "VIN extracted successfully",
       details: { vin: "1HGBH41JXMN109186", confidence: 0.95 }
     }
@@ -44,8 +45,7 @@ export const AdminPanel = () => {
   };
 
   const saveSettings = () => {
-    // In real implementation, this would save to database
-    toast.success("Settings saved successfully");
+    toast.success(t('saveSettings'));
   };
 
   const downloadLogs = () => {
@@ -71,13 +71,13 @@ export const AdminPanel = () => {
         <CardHeader className="bg-gradient-to-r from-purple-600 to-orange-500 text-white">
           <CardTitle className="flex items-center gap-2">
             <Settings className="h-5 w-5" />
-            System Settings
+            {t('systemSettings')}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="confidence">OCR Confidence Threshold</Label>
+              <Label htmlFor="confidence">{t('ocrConfidenceThreshold')}</Label>
               <Input
                 id="confidence"
                 type="number"
@@ -88,12 +88,12 @@ export const AdminPanel = () => {
                 onChange={(e) => updateSetting('confidenceThreshold', e.target.value)}
               />
               <p className="text-sm text-gray-600 mt-1">
-                Minimum confidence level for OCR results (0-10)
+                {t('ocrConfidenceDesc')}
               </p>
             </div>
             
             <div>
-              <Label htmlFor="fileSize">Max File Size (MB)</Label>
+              <Label htmlFor="fileSize">{t('maxFileSize')}</Label>
               <Input
                 id="fileSize"
                 type="number"
@@ -103,25 +103,25 @@ export const AdminPanel = () => {
                 onChange={(e) => updateSetting('maxFileSize', e.target.value)}
               />
               <p className="text-sm text-gray-600 mt-1">
-                Maximum allowed file size for uploads
+                {t('maxFileSizeDesc')}
               </p>
             </div>
           </div>
 
           <div>
-            <Label htmlFor="tessData">Tesseract Data Path</Label>
+            <Label htmlFor="tessData">{t('tesseractDataPath')}</Label>
             <Input
               id="tessData"
               value={settings.tessDataPath}
               onChange={(e) => updateSetting('tessDataPath', e.target.value)}
             />
             <p className="text-sm text-gray-600 mt-1">
-              Path to Tesseract OCR language data files
+              {t('tesseractDataDesc')}
             </p>
           </div>
 
           <Button onClick={saveSettings} className="bg-purple-600 hover:bg-purple-700">
-            Save Settings
+            {t('saveSettings')}
           </Button>
         </CardContent>
       </Card>
@@ -129,7 +129,7 @@ export const AdminPanel = () => {
       {/* Logs Card */}
       <Card className="border-2 border-orange-200 shadow-lg">
         <CardHeader className="bg-gradient-to-r from-orange-500 to-purple-600 text-white flex flex-row items-center justify-between">
-          <CardTitle>System Logs</CardTitle>
+          <CardTitle>{t('systemLogs')}</CardTitle>
           <Button 
             onClick={downloadLogs}
             variant="secondary"
@@ -137,7 +137,7 @@ export const AdminPanel = () => {
             className="bg-white text-purple-600 hover:bg-gray-100"
           >
             <Download className="h-4 w-4 mr-2" />
-            Download Logs
+            {t('downloadLogs')}
           </Button>
         </CardHeader>
         <CardContent className="p-6">
@@ -165,7 +165,7 @@ export const AdminPanel = () => {
                       ? 'bg-red-100 text-red-800'
                       : 'bg-blue-100 text-blue-800'
                   }`}>
-                    {log.level}
+                    {t(log.level)}
                   </span>
                   <span className="text-xs text-gray-500">
                     {new Date(log.timestamp).toLocaleString()}
@@ -175,7 +175,7 @@ export const AdminPanel = () => {
                 {log.details && (
                   <details className="mt-2">
                     <summary className="text-xs text-gray-600 cursor-pointer">
-                      View Details
+                      {t('viewDetails')}
                     </summary>
                     <pre className="text-xs text-gray-600 mt-1 p-2 bg-gray-100 rounded">
                       {JSON.stringify(log.details, null, 2)}
