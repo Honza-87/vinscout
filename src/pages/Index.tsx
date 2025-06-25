@@ -268,7 +268,7 @@ const Index = () => {
       }
       return vehicle;
     });
-    onVehiclesChange(updatedVehicles);
+    setVehicles(updatedVehicles);
   };
 
   const updateVehicleInsurance = (vehicleId: number, field: string, value: any) => {
@@ -284,7 +284,7 @@ const Index = () => {
       }
       return vehicle;
     });
-    onVehiclesChange(updatedVehicles);
+    setVehicles(updatedVehicles);
   };
 
   return (
