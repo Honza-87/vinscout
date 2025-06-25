@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState } from 'react';
 
 type Language = 'cs' | 'en';
@@ -15,10 +16,14 @@ const translations = {
     documentProcessing: "Document Processing",
     adminPanel: "Admin Panel",
     insuranceDetails: "Insurance Details",
+    clientInformation: "Client Information",
     policyholderInfo: "Policyholder Information",
     policyholderIco: "Policyholder IČO",
+    enterPolicyholderIco: "Enter Policyholder IČO",
     email: "Email",
+    enterEmail: "Enter Email",
     phone: "Phone",
+    enterPhone: "Enter Phone",
     startOfInsurance: "Start of Insurance",
     insuranceCoverage: "Insurance Coverage",
     mandatoryInsurance: "Mandatory Insurance",
@@ -108,10 +113,14 @@ const translations = {
     documentProcessing: "Zpracování dokumentů",
     adminPanel: "Administrační panel",
     insuranceDetails: "Detaily pojištění",
+    clientInformation: "Informace o klientovi",
     policyholderInfo: "Informace o pojistníkovi",
     policyholderIco: "IČO pojistníka",
+    enterPolicyholderIco: "Zadejte IČO pojistníka",
     email: "E-mail",
+    enterEmail: "Zadejte e-mail",
     phone: "Telefon",
+    enterPhone: "Zadejte telefon",
     startOfInsurance: "Začátek pojištění",
     insuranceCoverage: "Pojistné krytí",
     mandatoryInsurance: "Povinné ručení",
