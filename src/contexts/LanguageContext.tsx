@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState } from 'react';
 
 type Language = 'cs' | 'en';
@@ -18,8 +17,8 @@ const translations = {
     insuranceDetails: "Insurance Details",
     clientInformation: "Client Information",
     policyholderInfo: "Policyholder Information",
-    policyholderIco: "Policyholder IČO",
-    enterPolicyholderIco: "Enter Policyholder IČO",
+    policyholderIco: "Policyholder TIN",
+    enterPolicyholderIco: "Enter Policyholder TIN",
     email: "Email",
     enterEmail: "Enter Email",
     phone: "Phone",
@@ -65,8 +64,8 @@ const translations = {
     ownerOperatorInfo: "Owner & Operator Information",
     ownerSameAsPolicyholder: "Owner same as policyholder",
     operatorSameAsPolicyholder: "Operator same as policyholder",
-    enterOwnerIco: "Enter Owner IČO",
-    enterOperatorIco: "Enter Operator IČO",
+    enterOwnerIco: "Enter Owner TIN",
+    enterOperatorIco: "Enter Operator TIN",
     changeIndividualCoverage: "Individual insurance coverage adaptation",
     keepSameCoverage: "Keep insurance coverage same as the rest of the fleet",
     individualInsuranceCoverageAdaptation: "Individual insurance coverage adaptation",
@@ -105,7 +104,17 @@ const translations = {
     ERROR: "ERROR",
     unextractedFiles: "Unextracted Files",
     unextractedFilesDesc: "You have files that haven't been processed yet. What would you like to do?",
-    extract: "Extract & Decode"
+    extract: "Extract & Decode",
+    documentUploadAndExtraction: "Document Upload & Extraction",
+    uploadedFiles: "Uploaded Files",
+    extracting: "Extracting...",
+    extractionResults: "Extraction Results",
+    vinsFound: "VINs found",
+    noVinsFound: "No VINs found",
+    processing: "processing",
+    dropFiles: "Drag and drop files here or click to browse",
+    manualVehicleAddition: "Manual Vehicle Addition",
+    manualEntries: "Manual Entries"
   },
   cs: {
     title: "VIN Scout od PETRISK",
@@ -202,7 +211,17 @@ const translations = {
     ERROR: "CHYBA",
     unextractedFiles: "Nezpracované soubory",
     unextractedFilesDesc: "Máte soubory, které ještě nebyly zpracovány. Co chcete udělat?",
-    extract: "Extrahovat a dekódovat"
+    extract: "Extrahovat a dekódovat",
+    documentUploadAndExtraction: "Nahrání a extrakce dokumentů",
+    uploadedFiles: "Nahrané soubory",
+    extracting: "Extrahování...",
+    extractionResults: "Výsledky extrakce",
+    vinsFound: "nalezených VIN",
+    noVinsFound: "Nebyly nalezeny žádné VIN",
+    processing: "zpracování",
+    dropFiles: "Přetáhněte soubory sem nebo klikněte pro procházení",
+    manualVehicleAddition: "Ruční přidání vozidla",
+    manualEntries: "Ruční záznamy"
   }
 };
 
