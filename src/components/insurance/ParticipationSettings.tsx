@@ -7,7 +7,8 @@ import { useLanguage } from "@/contexts/LanguageContext";
 interface ParticipationSettingsProps {
   formData: {
     participation: string;
-    fixedParticipation: string;
+    mandatoryInsuranceLimit: string;
+    accidentInsuranceFixed: string;
     percentageParticipation: string;
     mandatoryInsurance: boolean;
     accidentInsurance: boolean;
@@ -34,8 +35,8 @@ export const ParticipationSettings = ({ formData, onFormDataChange, showParticip
           <div>
             <Label>{t('mandatoryInsuranceLimit')}</Label>
             <Select
-              value={formData.fixedParticipation}
-              onValueChange={(value) => onFormDataChange('fixedParticipation', value)}
+              value={formData.mandatoryInsuranceLimit}
+              onValueChange={(value) => onFormDataChange('mandatoryInsuranceLimit', value)}
             >
               <SelectTrigger className="rounded-md">
                 <SelectValue />
@@ -68,8 +69,8 @@ export const ParticipationSettings = ({ formData, onFormDataChange, showParticip
               {formData.useFixedAmount && (
                 <div>
                   <Select
-                    value={formData.fixedParticipation}
-                    onValueChange={(value) => onFormDataChange('fixedParticipation', value)}
+                    value={formData.accidentInsuranceFixed}
+                    onValueChange={(value) => onFormDataChange('accidentInsuranceFixed', value)}
                   >
                     <SelectTrigger className="rounded-md">
                       <SelectValue />

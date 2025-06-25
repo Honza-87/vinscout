@@ -32,7 +32,7 @@ export const VehicleInsuranceCoverage = ({
         onClick={() => onToggleIndividualCoverage(vehicleId)}
         variant="outline"
         size="sm"
-        className="mb-4 bg-purple-100 hover:bg-purple-200 text-purple-800 border-purple-300"
+        className="mb-4 bg-purple-200 hover:bg-purple-300 text-purple-800 border-purple-400"
       >
         {hasIndividualCoverage ? t('keepSameCoverage') : t('individualInsuranceCoverageAdaptation')}
       </Button>
@@ -129,8 +129,8 @@ export const VehicleInsuranceCoverage = ({
                   <div>
                     <Label className="text-sm">{t('mandatoryInsuranceLimit')}</Label>
                     <Select
-                      value={insuranceData.fixedParticipation}
-                      onValueChange={(value) => onUpdateInsurance(vehicleId, 'fixedParticipation', value)}
+                      value={insuranceData.mandatoryInsuranceLimit || "100mil"}
+                      onValueChange={(value) => onUpdateInsurance(vehicleId, 'mandatoryInsuranceLimit', value)}
                     >
                       <SelectTrigger className="rounded-md h-9">
                         <SelectValue />
@@ -163,8 +163,8 @@ export const VehicleInsuranceCoverage = ({
                       {insuranceData.useFixedAmount && (
                         <div>
                           <Select
-                            value={insuranceData.fixedParticipation}
-                            onValueChange={(value) => onUpdateInsurance(vehicleId, 'fixedParticipation', value)}
+                            value={insuranceData.accidentInsuranceFixed || "100"}
+                            onValueChange={(value) => onUpdateInsurance(vehicleId, 'accidentInsuranceFixed', value)}
                           >
                             <SelectTrigger className="rounded-md h-9">
                               <SelectValue />
@@ -194,7 +194,7 @@ export const VehicleInsuranceCoverage = ({
                       {insuranceData.usePercentageAmount && (
                         <div>
                           <Select
-                            value={insuranceData.percentageParticipation}
+                            value={insuranceData.percentageParticipation || "min"}
                             onValueChange={(value) => onUpdateInsurance(vehicleId, 'percentageParticipation', value)}
                           >
                             <SelectTrigger className="rounded-md h-9">

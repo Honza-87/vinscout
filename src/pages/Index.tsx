@@ -29,9 +29,10 @@ const Index = () => {
     phone: "",
     startOfInsurance: "",
     participation: "fixed",
-    fixedParticipation: "100mil", // Changed to recommended standard
+    mandatoryInsuranceLimit: "100mil", // Separate field for mandatory insurance
+    accidentInsuranceFixed: "100", // Separate field for accident insurance fixed amount
     percentageParticipation: "min",
-    mandatoryInsurance: true, // Set to true by default
+    mandatoryInsurance: true,
     accidentInsurance: false,
     injuryInsurance: false,
     windowsInsurance: "0",
@@ -52,9 +53,8 @@ const Index = () => {
     if (uploadedFiles.length === 0) return;
     
     setIsExtracting(true);
-    setHasExtracted(true); // Set extraction flag
+    setHasExtracted(true);
     
-    // Keep existing manual entries when adding new files
     const existingManualEntry = extractedFiles.find(f => f.file.name === 'Manual Entry');
     const newExtractedFiles: ExtractedFile[] = uploadedFiles.map(file => ({
       file,
@@ -63,34 +63,28 @@ const Index = () => {
       extractedVins: []
     }));
     
-    // Add back the manual entry if it exists
     if (existingManualEntry) {
       newExtractedFiles.push(existingManualEntry);
     }
     
     setExtractedFiles(newExtractedFiles);
 
-    // Process each uploaded file (not the manual entry)
     for (let i = 0; i < uploadedFiles.length; i++) {
       const extractedFile = newExtractedFiles[i];
       
-      // Simulate extraction progress
       for (let progress = 0; progress <= 100; progress += 10) {
         extractedFile.progress = progress;
         setExtractedFiles([...newExtractedFiles]);
         await new Promise(resolve => setTimeout(resolve, 200));
       }
       
-      // Simulate extraction result based on file type
       const isPdf = extractedFile.file.type === 'application/pdf';
       let mockVins: string[] = [];
       
-      if (Math.random() > 0.2) { // 80% success rate
+      if (Math.random() > 0.2) {
         if (isPdf) {
-          // Only one VIN per PDF
           mockVins = ["WBAVA31030NL12345"];
         } else {
-          // Multiple VINs/plates for XLS/DOC files
           mockVins = ["WBAVA31030NL12345", "1HGBH41JXMN109186", "ABC-1234"];
         }
       }
@@ -104,7 +98,6 @@ const Index = () => {
   };
 
   const handleDecode = async () => {
-    // Check if there are unextracted files
     const unextractedFiles = uploadedFiles.filter(file => {
       const extractedFile = extractedFiles.find(ef => ef.file.name === file.name);
       return !extractedFile || extractedFile.status === 'processing';
@@ -119,7 +112,6 @@ const Index = () => {
   };
 
   const performDecode = async () => {
-    // Collect all VINs from extracted files and manual additions
     const allVins: string[] = [];
     extractedFiles.forEach(file => {
       allVins.push(...file.extractedVins);
@@ -130,13 +122,11 @@ const Index = () => {
     setIsDecoding(true);
     setDecodingProgress(0);
 
-    // Simulate CEBIA data collection
     for (let i = 0; i <= 100; i += 5) {
       setDecodingProgress(i);
       await new Promise(resolve => setTimeout(resolve, 100));
     }
 
-    // Create vehicles from all VINs
     const newVehicles = allVins.map((vinOrPlate, index) => {
       const isVin = vinOrPlate.length === 17;
       return {
@@ -161,7 +151,8 @@ const Index = () => {
           enginePower: "140 kW",
           maxWeight: "1850 kg",
           year: "2020",
-          seats: "5"
+          seats: "5",
+          fuelType: "Diesel"
         }
       };
     });
@@ -191,7 +182,6 @@ const Index = () => {
   };
 
   const addManualVehicle = async (vin: string) => {
-    // Validate VIN or license plate
     const trimmedVin = vin.trim();
     
     if (trimmedVin.length === 17) {
@@ -199,11 +189,9 @@ const Index = () => {
     } else if (trimmedVin.length === 7 || trimmedVin.length === 8) {
       // It's a license plate
     } else {
-      // Invalid entry - don't add it
       return;
     }
 
-    // Find or create manual entry file
     const updatedFiles = [...extractedFiles];
     const manualFileIndex = updatedFiles.findIndex(f => f.file.name === 'Manual Entry');
     
@@ -228,7 +216,6 @@ const Index = () => {
     if (manualFileIndex >= 0) {
       updatedFiles[manualFileIndex].extractedVins = updatedFiles[manualFileIndex].extractedVins.filter(vin => vin !== vinToRemove);
       
-      // If no VINs left, remove the manual entry file completely
       if (updatedFiles[manualFileIndex].extractedVins.length === 0) {
         updatedFiles.splice(manualFileIndex, 1);
       }
@@ -245,7 +232,6 @@ const Index = () => {
         const hasIndividualCoverage = !vehicle.hasIndividualCoverage;
         const updatedVehicle = { ...vehicle, hasIndividualCoverage };
         
-        // If enabling individual coverage, copy global settings
         if (hasIndividualCoverage) {
           updatedVehicle.individualInsurance = {
             mandatoryInsurance: formData.mandatoryInsurance,
@@ -257,7 +243,8 @@ const Index = () => {
             assistanceServices: formData.assistanceServices,
             vandalism: formData.vandalism,
             participation: formData.participation,
-            fixedParticipation: formData.fixedParticipation,
+            mandatoryInsuranceLimit: formData.mandatoryInsuranceLimit,
+            accidentInsuranceFixed: formData.accidentInsuranceFixed,
             percentageParticipation: formData.percentageParticipation,
             useFixedAmount: formData.useFixedAmount,
             usePercentageAmount: formData.usePercentageAmount,
@@ -320,7 +307,6 @@ const Index = () => {
           </TabsList>
 
           <TabsContent value="processing">
-            {/* Insurance Details - Full Width */}
             <div className="mb-8">
               <InsuranceForm 
                 formData={formData}
@@ -328,7 +314,6 @@ const Index = () => {
               />
             </div>
 
-            {/* Document Upload & VIN Extraction - Full Width with Two Columns */}
             <div className="mb-8">
               <FileUpload 
                 uploadedFiles={uploadedFiles}
@@ -350,7 +335,7 @@ const Index = () => {
                   disabled={isDecoding}
                   className="w-full bg-green-600 hover:bg-green-700 text-white py-6 text-lg rounded-lg"
                 >
-                  {isDecoding ? `${t('decoding')} ${decodingProgress}%` : t('decode')}
+                  {isDecoding ? `${t('decoding')} ${decodingProgress}%` : 'DECODE'}
                 </Button>
               </div>
             )}
@@ -367,7 +352,6 @@ const Index = () => {
           </TabsContent>
         </Tabs>
 
-        {/* Unextracted Files Dialog */}
         <Dialog open={showUnextractedDialog} onOpenChange={setShowUnextractedDialog}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
@@ -394,7 +378,7 @@ const Index = () => {
                 onClick={handleProceedWithoutExtract}
                 className="flex-1 bg-green-600 hover:bg-green-700"
               >
-                {t('decode')}
+                DECODE
               </Button>
               <Button
                 variant="outline"

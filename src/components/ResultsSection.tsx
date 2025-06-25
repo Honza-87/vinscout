@@ -31,7 +31,6 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
         const hasIndividualCoverage = !vehicle.hasIndividualCoverage;
         const updatedVehicle = { ...vehicle, hasIndividualCoverage };
         
-        // If enabling individual coverage, copy global settings
         if (hasIndividualCoverage) {
           updatedVehicle.individualInsurance = {
             mandatoryInsurance: formData.mandatoryInsurance,
@@ -43,7 +42,8 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
             assistanceServices: formData.assistanceServices,
             vandalism: formData.vandalism,
             participation: formData.participation,
-            fixedParticipation: formData.fixedParticipation,
+            mandatoryInsuranceLimit: formData.mandatoryInsuranceLimit,
+            accidentInsuranceFixed: formData.accidentInsuranceFixed,
             percentageParticipation: formData.percentageParticipation,
             useFixedAmount: formData.useFixedAmount,
             usePercentageAmount: formData.usePercentageAmount,
@@ -101,7 +101,6 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
           <CardTitle>{t('vehicleResults')}</CardTitle>
         </CardHeader>
         <CardContent className="p-6">
-          {/* Vehicle List */}
           {vehicles.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               <p>{t('noVehicles')}</p>
