@@ -1,36 +1,24 @@
-import { useState } from "react";
-import { FileUpload } from "@/components/FileUpload";
-import { InsuranceForm } from "@/components/InsuranceForm";
-import { ResultsSection } from "@/components/ResultsSection";
-import { AdminPanel } from "@/components/AdminPanel";
-import { LanguageToggle } from "@/components/LanguageToggle";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { AlertTriangle, X, Zap } from "lucide-react";
 
-interface ExtractedFile {
-  file: File;
-  status: 'processing' | 'success' | 'error';
-  progress: number;
-  extractedVins: string[];
-}
+import React, { useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AdminPanel } from "@/components/AdminPanel";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { AppHeader } from "@/components/layout/AppHeader";
+import { ProcessingTab } from "@/components/processing/ProcessingTab";
+import { InsuranceFormData } from "@/types";
 
 const Index = () => {
   const { t } = useLanguage();
   
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [extractedFiles, setExtractedFiles] = useState<ExtractedFile[]>([]);
-  const [hasExtracted, setHasExtracted] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<InsuranceFormData>({
     policyholderIco: "",
     email: "",
     phone: "",
     startOfInsurance: "",
     participation: "fixed",
-    mandatoryInsuranceLimit: "100mil", // Separate field for mandatory insurance
-    accidentInsuranceFixed: "100", // Separate field for accident insurance fixed amount
+    mandatoryInsuranceLimit: "100mil",
+    accidentInsuranceFixed: "100",
     percentageParticipation: "min",
     mandatoryInsurance: true,
     accidentInsurance: false,
@@ -43,356 +31,37 @@ const Index = () => {
     useFixedAmount: false,
     usePercentageAmount: false
   });
-  const [vehicles, setVehicles] = useState<any[]>([]);
-  const [isExtracting, setIsExtracting] = useState(false);
-  const [isDecoding, setIsDecoding] = useState(false);
-  const [decodingProgress, setDecodingProgress] = useState(0);
-  const [showUnextractedDialog, setShowUnextractedDialog] = useState(false);
-
-  const handleExtract = async () => {
-    if (uploadedFiles.length === 0) return;
-    
-    setIsExtracting(true);
-    setHasExtracted(true);
-    
-    const existingManualEntry = extractedFiles.find(f => f.file.name === 'Manual Entry');
-    const newExtractedFiles: ExtractedFile[] = uploadedFiles.map(file => ({
-      file,
-      status: 'processing' as const,
-      progress: 0,
-      extractedVins: []
-    }));
-    
-    if (existingManualEntry) {
-      newExtractedFiles.push(existingManualEntry);
-    }
-    
-    setExtractedFiles(newExtractedFiles);
-
-    for (let i = 0; i < uploadedFiles.length; i++) {
-      const extractedFile = newExtractedFiles[i];
-      
-      for (let progress = 0; progress <= 100; progress += 10) {
-        extractedFile.progress = progress;
-        setExtractedFiles([...newExtractedFiles]);
-        await new Promise(resolve => setTimeout(resolve, 200));
-      }
-      
-      const isPdf = extractedFile.file.type === 'application/pdf';
-      let mockVins: string[] = [];
-      
-      if (Math.random() > 0.2) {
-        if (isPdf) {
-          mockVins = ["WBAVA31030NL12345"];
-        } else {
-          mockVins = ["WBAVA31030NL12345", "1HGBH41JXMN109186", "ABC-1234"];
-        }
-      }
-      
-      extractedFile.extractedVins = mockVins;
-      extractedFile.status = mockVins.length > 0 ? 'success' : 'error';
-      setExtractedFiles([...newExtractedFiles]);
-    }
-    
-    setIsExtracting(false);
-  };
-
-  const handleDecode = async () => {
-    const unextractedFiles = uploadedFiles.filter(file => {
-      const extractedFile = extractedFiles.find(ef => ef.file.name === file.name);
-      return !extractedFile || extractedFile.status === 'processing';
-    });
-
-    if (unextractedFiles.length > 0) {
-      setShowUnextractedDialog(true);
-      return;
-    }
-
-    await performDecode();
-  };
-
-  const performDecode = async () => {
-    const allVins: string[] = [];
-    extractedFiles.forEach(file => {
-      allVins.push(...file.extractedVins);
-    });
-
-    if (allVins.length === 0) return;
-
-    setIsDecoding(true);
-    setDecodingProgress(0);
-
-    for (let i = 0; i <= 100; i += 5) {
-      setDecodingProgress(i);
-      await new Promise(resolve => setTimeout(resolve, 100));
-    }
-
-    const newVehicles = allVins.map((vinOrPlate, index) => {
-      const isVin = vinOrPlate.length === 17;
-      return {
-        id: Date.now() + index,
-        vin: isVin ? vinOrPlate : "",
-        licensePlate: isVin ? "" : vinOrPlate,
-        mileage: "",
-        vehicleValue: "",
-        mandatoryInsurance: false,
-        accidentInsurance: false,
-        injuryInsurance: false,
-        windowsInsurance: "10",
-        ownerSameAsInsurer: true,
-        operatorSameAsInsurer: true,
-        ownerTin: "",
-        operatorTin: "",
-        cebia: {
-          type: "Passenger Car",
-          manufacturer: "BMW",
-          model: "320d",
-          engineDisplacement: "1995 cm³",
-          enginePower: "140 kW",
-          maxWeight: "1850 kg",
-          year: "2020",
-          seats: "5",
-          fuelType: "Diesel"
-        }
-      };
-    });
-
-    setVehicles(newVehicles);
-    setIsDecoding(false);
-    setDecodingProgress(0);
-  };
-
-  const handleExtractAndDecode = async () => {
-    setShowUnextractedDialog(false);
-    await handleExtract();
-    setTimeout(async () => {
-      await performDecode();
-    }, 1000);
-  };
-
-  const handleProceedWithoutExtract = async () => {
-    setShowUnextractedDialog(false);
-    await performDecode();
-  };
-
-  const updateExtractedVin = (fileIndex: number, vinIndex: number, newVin: string) => {
-    const updatedFiles = [...extractedFiles];
-    updatedFiles[fileIndex].extractedVins[vinIndex] = newVin;
-    setExtractedFiles(updatedFiles);
-  };
-
-  const addManualVehicle = async (vin: string) => {
-    const trimmedVin = vin.trim();
-    
-    if (trimmedVin.length === 17) {
-      // It's a VIN
-    } else if (trimmedVin.length === 7 || trimmedVin.length === 8) {
-      // It's a license plate
-    } else {
-      return;
-    }
-
-    const updatedFiles = [...extractedFiles];
-    const manualFileIndex = updatedFiles.findIndex(f => f.file.name === 'Manual Entry');
-    
-    if (manualFileIndex >= 0) {
-      updatedFiles[manualFileIndex].extractedVins.push(trimmedVin);
-    } else {
-      updatedFiles.push({
-        file: new File([], 'Manual Entry'),
-        status: 'success',
-        progress: 100,
-        extractedVins: [trimmedVin]
-      });
-    }
-    
-    setExtractedFiles(updatedFiles);
-  };
-
-  const removeManualVehicle = (vinToRemove: string) => {
-    const updatedFiles = [...extractedFiles];
-    const manualFileIndex = updatedFiles.findIndex(f => f.file.name === 'Manual Entry');
-    
-    if (manualFileIndex >= 0) {
-      updatedFiles[manualFileIndex].extractedVins = updatedFiles[manualFileIndex].extractedVins.filter(vin => vin !== vinToRemove);
-      
-      if (updatedFiles[manualFileIndex].extractedVins.length === 0) {
-        updatedFiles.splice(manualFileIndex, 1);
-      }
-    }
-    
-    setExtractedFiles(updatedFiles);
-  };
-
-  const hasExtractedData = extractedFiles.some(f => f.extractedVins.length > 0);
-
-  const toggleIndividualCoverage = (vehicleId: number) => {
-    const updatedVehicles = vehicles.map(vehicle => {
-      if (vehicle.id === vehicleId) {
-        const hasIndividualCoverage = !vehicle.hasIndividualCoverage;
-        const updatedVehicle = { ...vehicle, hasIndividualCoverage };
-        
-        if (hasIndividualCoverage) {
-          updatedVehicle.individualInsurance = {
-            mandatoryInsurance: formData.mandatoryInsurance,
-            accidentInsurance: formData.accidentInsurance,
-            injuryInsurance: formData.injuryInsurance,
-            windowsInsurance: formData.windowsInsurance,
-            animalCollisions: formData.animalCollisions,
-            luggage: formData.luggage,
-            assistanceServices: formData.assistanceServices,
-            vandalism: formData.vandalism,
-            participation: formData.participation,
-            mandatoryInsuranceLimit: formData.mandatoryInsuranceLimit,
-            accidentInsuranceFixed: formData.accidentInsuranceFixed,
-            percentageParticipation: formData.percentageParticipation,
-            useFixedAmount: formData.useFixedAmount,
-            usePercentageAmount: formData.usePercentageAmount,
-          };
-        }
-        
-        return updatedVehicle;
-      }
-      return vehicle;
-    });
-    setVehicles(updatedVehicles);
-  };
-
-  const updateVehicleInsurance = (vehicleId: number, field: string, value: any) => {
-    const updatedVehicles = vehicles.map(vehicle => {
-      if (vehicle.id === vehicleId) {
-        return {
-          ...vehicle,
-          individualInsurance: {
-            ...vehicle.individualInsurance,
-            [field]: value
-          }
-        };
-      }
-      return vehicle;
-    });
-    setVehicles(updatedVehicles);
-  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-orange-50">
-      <div className="container mx-auto p-6">
-        <header className="text-center mb-8 relative">
-          <div className="absolute left-0 top-0">
-            <img 
-              src="/lovable-uploads/fe5d5630-7728-44c7-8b57-8cc5139a93e7.png" 
-              alt="Petrisk Logo" 
-              className="h-12 w-auto"
-            />
-          </div>
-          <div className="absolute right-0 top-0">
-            <LanguageToggle />
-          </div>
-          <h1 className="text-4xl font-bold text-purple-800 mb-2">
-            {t('title')}
-          </h1>
-          <p className="text-lg text-gray-600">
-            {t('subtitle')}
-          </p>
-        </header>
+    <ErrorBoundary>
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-orange-50">
+        <div className="container mx-auto p-6">
+          <AppHeader />
 
-        <Tabs defaultValue="processing" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6 rounded-lg">
-            <TabsTrigger value="processing" className="text-lg rounded-md">
-              {t('documentProcessing')}
-            </TabsTrigger>
-            <TabsTrigger value="admin" className="text-lg rounded-md">
-              {t('adminPanel')}
-            </TabsTrigger>
-          </TabsList>
+          <Tabs defaultValue="processing" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-6 rounded-lg">
+              <TabsTrigger value="processing" className="text-lg rounded-md">
+                {t('documentProcessing')}
+              </TabsTrigger>
+              <TabsTrigger value="admin" className="text-lg rounded-md">
+                {t('adminPanel')}
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="processing">
-            <div className="mb-8">
-              <InsuranceForm 
+            <TabsContent value="processing">
+              <ProcessingTab 
                 formData={formData}
                 onFormDataChange={setFormData}
               />
-            </div>
+            </TabsContent>
 
-            <div className="mb-8">
-              <FileUpload 
-                uploadedFiles={uploadedFiles}
-                onFilesUploaded={setUploadedFiles}
-                extractedFiles={extractedFiles}
-                onExtract={handleExtract}
-                isExtracting={isExtracting}
-                onUpdateExtractedVin={updateExtractedVin}
-                onAddManualVehicle={addManualVehicle}
-                onRemoveManualVehicle={removeManualVehicle}
-                hasExtracted={hasExtracted}
-              />
-            </div>
-
-            {hasExtractedData && (
-              <div className="mb-8">
-                <Button 
-                  onClick={handleDecode}
-                  disabled={isDecoding}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white py-6 text-lg rounded-lg"
-                >
-                  {isDecoding ? `${t('decoding')} ${decodingProgress}%` : 'DECODE'}
-                </Button>
-              </div>
-            )}
-
-            <ResultsSection 
-              vehicles={vehicles}
-              onVehiclesChange={setVehicles}
-              formData={formData}
-            />
-          </TabsContent>
-
-          <TabsContent value="admin">
-            <AdminPanel />
-          </TabsContent>
-        </Tabs>
-
-        <Dialog open={showUnextractedDialog} onOpenChange={setShowUnextractedDialog}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <div className="flex items-center justify-between">
-                <DialogTitle className="flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5 text-yellow-600" />
-                  {t('unextractedFiles')}
-                </DialogTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowUnextractedDialog(false)}
-                  className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-              <DialogDescription>
-                {t('unextractedFilesDesc')}
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter className="flex gap-2">
-              <Button
-                onClick={handleProceedWithoutExtract}
-                className="flex-1 bg-green-600 hover:bg-green-700"
-              >
-                DECODE
-              </Button>
-              <Button
-                variant="outline"
-                onClick={handleExtractAndDecode}
-                className="flex-1 bg-orange-600 hover:bg-orange-700 text-white border-orange-600"
-              >
-                <Zap className="h-4 w-4 mr-2" />
-                {t('extract')}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            <TabsContent value="admin">
+              <AdminPanel />
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 };
 

@@ -4,12 +4,13 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { IndividualInsuranceData, InsuranceFormData } from "@/types";
 
 interface VehicleInsuranceCoverageProps {
   vehicleId: number;
   hasIndividualCoverage: boolean;
-  insuranceData: any;
-  globalInsuranceData: any;
+  insuranceData: IndividualInsuranceData;
+  globalInsuranceData: InsuranceFormData;
   onToggleIndividualCoverage: (vehicleId: number) => void;
   onUpdateInsurance: (vehicleId: number, field: string, value: any) => void;
 }
@@ -24,7 +25,14 @@ export const VehicleInsuranceCoverage = ({
 }: VehicleInsuranceCoverageProps) => {
   const { t } = useLanguage();
 
-  const showParticipation = insuranceData.mandatoryInsurance || insuranceData.accidentInsurance || insuranceData.windowsInsurance !== "0" || insuranceData.injuryInsurance || insuranceData.animalCollisions || insuranceData.luggage || insuranceData.assistanceServices || insuranceData.vandalism;
+  const showParticipation = insuranceData.mandatoryInsurance || 
+    insuranceData.accidentInsurance || 
+    insuranceData.windowsInsurance !== "0" || 
+    insuranceData.injuryInsurance || 
+    insuranceData.animalCollisions || 
+    insuranceData.luggage || 
+    insuranceData.assistanceServices || 
+    insuranceData.vandalism;
 
   return (
     <div className="mt-4 pt-4 border-t border-gray-200">
