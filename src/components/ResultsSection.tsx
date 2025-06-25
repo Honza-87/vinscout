@@ -12,7 +12,26 @@ import { VehicleInsuranceCoverage } from "./vehicle/VehicleInsuranceCoverage";
 interface ResultsSectionProps {
   vehicles: any[];
   onVehiclesChange: (vehicles: any[]) => void;
-  formData: any;
+  formData: {
+    policyholderIco: string;
+    email: string;
+    phone: string;
+    startOfInsurance: string;
+    participation: string;
+    mandatoryInsuranceLimit: string;
+    accidentInsuranceFixed: string;
+    percentageParticipation: string;
+    mandatoryInsurance: boolean;
+    accidentInsurance: boolean;
+    injuryInsurance: boolean;
+    windowsInsurance: string;
+    animalCollisions: boolean;
+    luggage: boolean;
+    assistanceServices: boolean;
+    vandalism: boolean;
+    useFixedAmount?: boolean;
+    usePercentageAmount?: boolean;
+  };
 }
 
 export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: ResultsSectionProps) => {

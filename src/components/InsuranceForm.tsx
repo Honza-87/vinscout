@@ -13,7 +13,8 @@ interface InsuranceFormProps {
     phone: string;
     startOfInsurance: string;
     participation: string;
-    fixedParticipation: string;
+    mandatoryInsuranceLimit: string;
+    accidentInsuranceFixed: string;
     percentageParticipation: string;
     mandatoryInsurance: boolean;
     accidentInsurance: boolean;
@@ -23,6 +24,8 @@ interface InsuranceFormProps {
     luggage: boolean;
     assistanceServices: boolean;
     vandalism: boolean;
+    useFixedAmount?: boolean;
+    usePercentageAmount?: boolean;
   };
   onFormDataChange: (data: any) => void;
 }
