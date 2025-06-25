@@ -45,6 +45,8 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
             participation: formData.participation,
             fixedParticipation: formData.fixedParticipation,
             percentageParticipation: formData.percentageParticipation,
+            useFixedAmount: formData.useFixedAmount,
+            usePercentageAmount: formData.usePercentageAmount,
           };
         }
         
@@ -248,6 +250,10 @@ export const ResultsSection = ({ vehicles, onVehiclesChange, formData }: Results
                               <div className="flex justify-between">
                                 <span className="font-medium text-green-700">{t('maxWeight')}:</span>
                                 <span className="text-green-600">{vehicle.cebia.maxWeight}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-medium text-green-700">{t('fuelType')}:</span>
+                                <span className="text-green-600">{vehicle.cebia.fuelType || "Diesel"}</span>
                               </div>
                               <div className="flex justify-between">
                                 <span className="font-medium text-green-700">{t('seats')}:</span>

@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -33,9 +32,9 @@ export const VehicleInsuranceCoverage = ({
         onClick={() => onToggleIndividualCoverage(vehicleId)}
         variant="outline"
         size="sm"
-        className="mb-4"
+        className="mb-4 bg-purple-100 hover:bg-purple-200 text-purple-800 border-purple-300"
       >
-        {hasIndividualCoverage ? t('keepSameCoverage') : t('changeIndividualCoverage')}
+        {hasIndividualCoverage ? t('keepSameCoverage') : t('individualInsuranceCoverageAdaptation')}
       </Button>
 
       {hasIndividualCoverage && (
@@ -149,70 +148,72 @@ export const VehicleInsuranceCoverage = ({
                 {/* Accident Insurance participation */}
                 {insuranceData.accidentInsurance && (
                   <div className="space-y-3">
-                    <div>
-                      <Label className="mb-2 block text-sm">{t('accidentInsuranceParticipation')}</Label>
-                      <RadioGroup
-                        value={insuranceData.participation}
-                        onValueChange={(value) => onUpdateInsurance(vehicleId, 'participation', value)}
-                        className="space-y-2"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="fixed" id={`fixed-${vehicleId}`} />
-                          <Label htmlFor={`fixed-${vehicleId}`} className="text-sm">{t('fixedAmount')}</Label>
+                    <Label className="text-sm">{t('accidentInsuranceParticipation')}</Label>
+                    
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`useFixedAmount-${vehicleId}`}
+                          checked={insuranceData.useFixedAmount || false}
+                          onCheckedChange={(checked) => onUpdateInsurance(vehicleId, 'useFixedAmount', checked)}
+                        />
+                        <Label htmlFor={`useFixedAmount-${vehicleId}`} className="text-sm">{t('fixedAmount')}</Label>
+                      </div>
+
+                      {insuranceData.useFixedAmount && (
+                        <div>
+                          <Select
+                            value={insuranceData.fixedParticipation}
+                            onValueChange={(value) => onUpdateInsurance(vehicleId, 'fixedParticipation', value)}
+                          >
+                            <SelectTrigger className="rounded-md h-9">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-md bg-white z-50">
+                              <SelectItem value="0">0</SelectItem>
+                              <SelectItem value="100">100</SelectItem>
+                              <SelectItem value="200">200</SelectItem>
+                              <SelectItem value="300">300</SelectItem>
+                              <SelectItem value="500">500</SelectItem>
+                              <SelectItem value="1000">1000</SelectItem>
+                              <SelectItem value="max">{t('max')}</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="percentage" id={`percentage-${vehicleId}`} />
-                          <Label htmlFor={`percentage-${vehicleId}`} className="text-sm">{t('percentageAmount')}</Label>
+                      )}
+
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`usePercentageAmount-${vehicleId}`}
+                          checked={insuranceData.usePercentageAmount || false}
+                          onCheckedChange={(checked) => onUpdateInsurance(vehicleId, 'usePercentageAmount', checked)}
+                        />
+                        <Label htmlFor={`usePercentageAmount-${vehicleId}`} className="text-sm">{t('percentageAmount')}</Label>
+                      </div>
+
+                      {insuranceData.usePercentageAmount && (
+                        <div>
+                          <Select
+                            value={insuranceData.percentageParticipation}
+                            onValueChange={(value) => onUpdateInsurance(vehicleId, 'percentageParticipation', value)}
+                          >
+                            <SelectTrigger className="rounded-md h-9">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-md bg-white z-50">
+                              <SelectItem value="min">{t('min')}</SelectItem>
+                              <SelectItem value="1%">1%</SelectItem>
+                              <SelectItem value="2%">2%</SelectItem>
+                              <SelectItem value="3%">3%</SelectItem>
+                              <SelectItem value="5%">5%</SelectItem>
+                              <SelectItem value="10%">10%</SelectItem>
+                              <SelectItem value="15%">15%</SelectItem>
+                              <SelectItem value="20%">20%</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
-                      </RadioGroup>
+                      )}
                     </div>
-
-                    {insuranceData.participation === "fixed" && (
-                      <div>
-                        <Label className="text-sm">{t('fixedAmount')}</Label>
-                        <Select
-                          value={insuranceData.fixedParticipation}
-                          onValueChange={(value) => onUpdateInsurance(vehicleId, 'fixedParticipation', value)}
-                        >
-                          <SelectTrigger className="rounded-md h-9">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="rounded-md bg-white z-50">
-                            <SelectItem value="0">0</SelectItem>
-                            <SelectItem value="100">100</SelectItem>
-                            <SelectItem value="200">200</SelectItem>
-                            <SelectItem value="300">300</SelectItem>
-                            <SelectItem value="500">500</SelectItem>
-                            <SelectItem value="1000">1000</SelectItem>
-                            <SelectItem value="max">{t('max')}</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )}
-
-                    {insuranceData.participation === "percentage" && (
-                      <div>
-                        <Label className="text-sm">{t('percentageAmount')}</Label>
-                        <Select
-                          value={insuranceData.percentageParticipation}
-                          onValueChange={(value) => onUpdateInsurance(vehicleId, 'percentageParticipation', value)}
-                        >
-                          <SelectTrigger className="rounded-md h-9">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="rounded-md bg-white z-50">
-                            <SelectItem value="min">{t('min')}</SelectItem>
-                            <SelectItem value="1%">1%</SelectItem>
-                            <SelectItem value="2%">2%</SelectItem>
-                            <SelectItem value="3%">3%</SelectItem>
-                            <SelectItem value="5%">5%</SelectItem>
-                            <SelectItem value="10%">10%</SelectItem>
-                            <SelectItem value="15%">15%</SelectItem>
-                            <SelectItem value="20%">20%</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )}
                   </div>
                 )}
 

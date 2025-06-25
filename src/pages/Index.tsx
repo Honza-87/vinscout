@@ -38,7 +38,9 @@ const Index = () => {
     animalCollisions: false,
     luggage: false,
     assistanceServices: false,
-    vandalism: false
+    vandalism: false,
+    useFixedAmount: false,
+    usePercentageAmount: false
   });
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [isExtracting, setIsExtracting] = useState(false);
@@ -236,6 +238,54 @@ const Index = () => {
   };
 
   const hasExtractedData = extractedFiles.some(f => f.extractedVins.length > 0);
+
+  const toggleIndividualCoverage = (vehicleId: number) => {
+    const updatedVehicles = vehicles.map(vehicle => {
+      if (vehicle.id === vehicleId) {
+        const hasIndividualCoverage = !vehicle.hasIndividualCoverage;
+        const updatedVehicle = { ...vehicle, hasIndividualCoverage };
+        
+        // If enabling individual coverage, copy global settings
+        if (hasIndividualCoverage) {
+          updatedVehicle.individualInsurance = {
+            mandatoryInsurance: formData.mandatoryInsurance,
+            accidentInsurance: formData.accidentInsurance,
+            injuryInsurance: formData.injuryInsurance,
+            windowsInsurance: formData.windowsInsurance,
+            animalCollisions: formData.animalCollisions,
+            luggage: formData.luggage,
+            assistanceServices: formData.assistanceServices,
+            vandalism: formData.vandalism,
+            participation: formData.participation,
+            fixedParticipation: formData.fixedParticipation,
+            percentageParticipation: formData.percentageParticipation,
+            useFixedAmount: formData.useFixedAmount,
+            usePercentageAmount: formData.usePercentageAmount,
+          };
+        }
+        
+        return updatedVehicle;
+      }
+      return vehicle;
+    });
+    onVehiclesChange(updatedVehicles);
+  };
+
+  const updateVehicleInsurance = (vehicleId: number, field: string, value: any) => {
+    const updatedVehicles = vehicles.map(vehicle => {
+      if (vehicle.id === vehicleId) {
+        return {
+          ...vehicle,
+          individualInsurance: {
+            ...vehicle.individualInsurance,
+            [field]: value
+          }
+        };
+      }
+      return vehicle;
+    });
+    onVehiclesChange(updatedVehicles);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-orange-50">
